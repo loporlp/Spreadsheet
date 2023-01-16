@@ -1,4 +1,6 @@
-﻿namespace FormulaEvaluator
+﻿using System.Text.RegularExpressions;
+
+namespace FormulaEvaluator
 {
     /// <summary>
     /// Author: Mason Sansom
@@ -30,8 +32,12 @@
         /// <exception cref="NotImplementedException"></exception>
         public static int Evaluate(String expression, Lookup variableEvaluator)
         {
-            // TODO...
-            throw new NotImplementedException();
+            Stack<String> integers = new Stack<String>();
+            Stack<String> operators = new Stack<String>();
+
+            string[] substrings = Regex.Split(expression, "(\\()|(\\))|(-)|(\\+)|(\\*)|(/)");
+
+
         }
     }
 }
