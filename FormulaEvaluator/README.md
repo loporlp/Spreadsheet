@@ -24,4 +24,5 @@ I did not run into any trouble and didn't have to consult anybody.
 
 # References:
 
-All code is my own
+1. https://stackoverflow.com/questions/6219454/efficient-way-to-remove-all-whitespace-from-string
+2. https://stackoverflow.com/questions/894263/identify-if-a-string-is-a-number

@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaEvaluatorTester", "FormulaEvaluatorTester\FormulaEvaluatorTester.csproj", "{2697BAB1-35F9-4888-A8AA-B61108E4EB98}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaEvaluatorTester", "FormulaEvaluatorTester\FormulaEvaluatorTester.csproj", "{9E1A805C-ABD2-4E19-9C77-EDFB893B9C62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,10 +22,10 @@ Global
 		{E9399CD9-E594-479A-BDD1-ABC5BF173111}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9399CD9-E594-479A-BDD1-ABC5BF173111}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9399CD9-E594-479A-BDD1-ABC5BF173111}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2697BAB1-35F9-4888-A8AA-B61108E4EB98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2697BAB1-35F9-4888-A8AA-B61108E4EB98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2697BAB1-35F9-4888-A8AA-B61108E4EB98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2697BAB1-35F9-4888-A8AA-B61108E4EB98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E1A805C-ABD2-4E19-9C77-EDFB893B9C62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E1A805C-ABD2-4E19-9C77-EDFB893B9C62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E1A805C-ABD2-4E19-9C77-EDFB893B9C62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E1A805C-ABD2-4E19-9C77-EDFB893B9C62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
