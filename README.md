@@ -16,4 +16,4 @@ The Spreadsheet program is currently capable of ....  Future extensions are ...
 
 # Time Expenditures:
 s
-    1. Assignment One:   Predicted Hours:          9       Actual Hours:   2 + 
+    1. Assignment One:   Predicted Hours:          9       Actual Hours:   2 + 1 + 2

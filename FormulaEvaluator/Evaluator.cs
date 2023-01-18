@@ -39,36 +39,101 @@ namespace FormulaEvaluator
 
             string[] substrings = Regex.Split(expression, "(\\()|(\\))|(-)|(\\+)|(\\*)|(/)");
 
-            foreach(string t in substrings)
+            foreach (string t in substrings)
             {
-                Regex.Replace(t, @"\s+", "");
-                //Check if t is a number
-                bool isNumeric = int.TryParse(t, out int n);
-                if (isNumeric || Regex.IsMatch(t, @"[A-Z]+[0-9]+"))
+                //Remove all whitespace
+                string token = Regex.Replace(t, @"\s+", "");
+
+                //If token is a variable convert it to a number
+                if (Regex.IsMatch(t, @"[A-Z]+[0-9]+"))
+                {
+                    try
+                    {
+                        token = variableEvaluator(token).ToString();
+                    } catch(Exception ex)
+                    {
+                        throw new ArgumentException();
+                    }
+                }
+
+                //Check if token is a number
+                bool isNumeric = int.TryParse(token, out int n);
+                if (isNumeric)
                 {
                     // If operators has a * or / do the operation
-                    if (operators.TryPeek(out string result) 
+                    if (operators.TryPeek(out string result)
                         && (result.Equals("*") || result.Equals("/")))
                     {
-                        integers.Push(Operate(integers.Pop(), n, operators.Pop()));
-
+                        if (!integers.TryPop(out int poppedNum))
+                            throw new ArgumentException();
+                        integers.Push(Operate(poppedNum, n, operators.Pop()));
                     }
-                    //If not just push N
+                    //If not just push n
                     else
                     {
                         integers.Push(n);
                     }
+                    continue;
                 }
 
+                //Check if token is + or -
+                if (token.Equals("+") || token.Equals("-"))
+                {
+                    if (operators.TryPeek(out string peekOp)
+                        && (peekOp.Equals("+") || peekOp.Equals("-")))
+                    {
+                        if (integers.Count < 2)
+                            throw new ArgumentException();
+                        integers.Push(Operate(integers.Pop(), integers.Pop(), operators.Pop()));
+                    }
 
+                    operators.Push(token);
+                    continue;
+                }
+
+                //Check if token is * or /
+                if (token.Equals("*") || token.Equals("/"))
+                {
+                    operators.Push(token);
+                }
             }
-
-            return 4;
+            if(operators.Count == 0)
+            {
+                if(integers.Count != 1)
+                    throw new ArgumentException();
+            }
+            else
+            {
+                if(integers.Count != 2 && operators.Count != 0)
+                {
+                    throw new ArgumentException();
+                }
+                else
+                {
+                    integers.Push(Operate(integers.Pop(), integers.Pop(), operators.Pop()));
+                }
+            }
+            return integers.Pop();
         }
-
-        private static int Operate(int num1, int num2, string operation)
+        public static int Operate(int num1, int num2, string operation)
         {
-            return 3;
+            //Operation is garunteed to be + - * /
+            switch (operation)
+            {
+                case "/":
+                    if (num2 == 0)
+                        throw new ArgumentException();
+                    return num1 / num2;
+                case "*":
+                    return num1 * num2;
+                case "+":
+                    return num1 + num2;
+                case "-":
+                    return num1 - num2;
+                default:
+                    //this path will never be reached
+                    return -1;
+            }
         }
     }
-}
+}   
