@@ -32,6 +32,8 @@ namespace FormulaEvaluator
         /// <param name="expression"> expression to be evalutated</param>
         /// <param name="variableEvaluator"> Variables to be evaluated</param>
         /// <returns> int solution to the expression </returns>
+        /// <exception cref="ArgumentException"> thows if invalid expression is given
+        /// like divide by 0 or invalid Infix notation</exception>
         public static int Evaluate(String expression, Lookup variableEvaluator)
         {
             Stack<int> integers = new Stack<int>();
@@ -45,7 +47,7 @@ namespace FormulaEvaluator
                 string token = Regex.Replace(t, @"\s+", "");
 
                 //If token is a variable convert it to a number
-                if (Regex.IsMatch(t, @"[A-Z]+[0-9]+"))
+                if (Regex.IsMatch(token, @"[a-zA-Z]+[0-9]+"))
                 {
                     try
                     {
@@ -115,6 +117,16 @@ namespace FormulaEvaluator
             }
             return integers.Pop();
         }
+        /// <summary>
+        /// Takes in 2 numbers and one of the following
+        /// operations [+, -, *, /]
+        /// and returns the result of num1 operation num2
+        /// </summary>
+        /// <param name="num1"></param>
+        /// <param name="num2"></param>
+        /// <param name="operation"></param>
+        /// <returns>result of num1 operation num2</returns>
+        /// <exception cref="ArgumentException"> throws if trying to divide by 0</exception>
         public static int Operate(int num1, int num2, string operation)
         {
             //Operation is garunteed to be + - * /
@@ -132,7 +144,7 @@ namespace FormulaEvaluator
                     return num1 - num2;
                 default:
                     //this path will never be reached
-                    return -1;
+                    throw new ArgumentException();
             }
         }
     }
