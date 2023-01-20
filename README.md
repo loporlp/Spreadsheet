@@ -12,8 +12,9 @@ Copyright:  CS 3500 and Mason Sansom - This work may not be copied for use in Ac
 
 # Overview of the Spreadsheet functionality
 
-The Spreadsheet program is currently capable of ....  Future extensions are ...
+The Spreadsheet program is currently capable of having a Library that can take in Infix
+expressions and evaluate them producting an answer
 
 # Time Expenditures:
 s
-    1. Assignment One:   Predicted Hours:          9       Actual Hours:   2 + 1 + 2
+    1. Assignment One:   Predicted Hours:          9       Actual Hours:   7
