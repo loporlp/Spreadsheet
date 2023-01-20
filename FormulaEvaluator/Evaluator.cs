@@ -151,7 +151,9 @@ namespace FormulaEvaluator
                         }
                         else
                         {
-                            integers.Push(Operate(integers.Pop(), integers.Pop(), operators.Pop()));
+                            //Division needs to be flipped here
+                            int num1 = integers.Pop();
+                            integers.Push(Operate(integers.Pop(), num1, operators.Pop()));
                         }
                     }
 

@@ -19,11 +19,15 @@ Console.WriteLine("Multiplication Test");
 Console.WriteLine(Evaluator.Evaluate("2*8", null) == 16);
 Console.WriteLine(Evaluator.Evaluate("2*     8", null) == 16);
 Console.WriteLine(Evaluator.Evaluate("20 * AB132", (x) => 10) == 200);
+Console.WriteLine(Evaluator.Evaluate("(((7 + 8) * (16 / 4) * 4 )+ 13) + 100/10 + 5/5*10", null) == 273 );
 
 //Testing Basic Division
 Console.WriteLine("Division Tests");
 Console.WriteLine(Evaluator.Evaluate("8/4", null) == 2);
 Console.WriteLine(Evaluator.Evaluate("20/B7", (x) => 5) == 4);
+Console.WriteLine(Evaluator.Evaluate("(8/4)", null) == 2);
+Console.WriteLine(Evaluator.Evaluate("(16/4) / 2", null) == 2);
+Console.WriteLine(Evaluator.Evaluate("16 / (8/4) / 2", null) == 4);
 try
 {
     Evaluator.Evaluate("20/0", null);
