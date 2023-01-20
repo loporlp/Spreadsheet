@@ -22,7 +22,11 @@ namespace FormulaEvaluator
     /// </summary>
     public class Evaluator
     {
-
+        /// <summary>
+        /// looks up given variable and return the number it represents
+        /// </summary>
+        /// <param name="variableName"> variable to be looked up</param>
+        /// <returns></returns>
         public delegate int Lookup(string variableName);
 
         /// <summary>
