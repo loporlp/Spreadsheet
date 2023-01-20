@@ -52,7 +52,7 @@ namespace FormulaEvaluator
                 string token = Regex.Replace(t, @"\s+", "");
 
                 //If token is a variable convert it to a number
-                if (Regex.IsMatch(token, @"[a-zA-Z]+[0-9]+"))
+                if (Regex.IsMatch(token, @"^[a-zA-Z]+[0-9]+$"))
                 {
                     try
                     {
