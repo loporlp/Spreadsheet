@@ -5,7 +5,7 @@ Date:       15-Jan-2023
 Course:     CS 3505, University of Utah, School of Computing
 GitHub ID:  loporlp
 Repo:       https://github.com/uofu-cs3500-spring23/spreadsheet-loporlp
-Date:       Day-Month-Year Time (of when submission is ready to be evaluated)
+Date:       1-Jan-2023
 Solution:   Spreadsheet
 Copyright:  CS 3500 and Mason Sansom - This work may not be copied for use in Academic Coursework.
 ```

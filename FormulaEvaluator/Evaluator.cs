@@ -26,14 +26,15 @@ namespace FormulaEvaluator
         public delegate int Lookup(string variableName);
 
         /// <summary>
-        ///     This function takes in a String expression 
-        ///     and evalutates and returns an answer
+        ///     This function takes in a String Infix expression and variable
+        ///     lookup function and evalutates and returns an answer
         /// </summary>
         /// <param name="expression"> expression to be evalutated</param>
         /// <param name="variableEvaluator"> Variables to be evaluated</param>
         /// <returns> int solution to the expression </returns>
         /// <exception cref="ArgumentException"> thows if invalid expression is given
-        /// like divide by 0 or invalid Infix notation</exception>
+        /// like divide by 0 or invalid Infix notation is also thrown if a variable is
+        /// unable to be looked up using the Lookup function</exception>
         public static int Evaluate(String expression, Lookup variableEvaluator)
         {
             Stack<int> integers = new Stack<int>();
@@ -52,7 +53,7 @@ namespace FormulaEvaluator
                     try
                     {
                         token = variableEvaluator(token).ToString();
-                    } catch(Exception ex)
+                    } catch
                     {
                         throw new ArgumentException();
                     }
@@ -63,8 +64,8 @@ namespace FormulaEvaluator
                 if (isNumeric)
                 {
                     // If operators has a * or / do the operation
-                    if (operators.TryPeek(out string result)
-                        && (result.Equals("*") || result.Equals("/")))
+                    if (operators.TryPeek(out string? result)
+                        && (result == "*" || result == "/"))
                     {
                         if (!integers.TryPop(out int poppedNum))
                             throw new ArgumentException();
@@ -79,10 +80,10 @@ namespace FormulaEvaluator
                 }
 
                 //Check if token is + or -
-                if (token.Equals("+") || token.Equals("-"))
+                if (token == "+" || token == "-")
                 {
-                    if (operators.TryPeek(out string peekOp)
-                        && (peekOp.Equals("+") || peekOp.Equals("-")))
+                    if (operators.TryPeek(out string? peekOp)
+                        && (peekOp == "+" || peekOp == "-"))
                     {
                         if (integers.Count < 2)
                             throw new ArgumentException();
@@ -94,11 +95,72 @@ namespace FormulaEvaluator
                 }
 
                 //Check if token is * or /
-                if (token.Equals("*") || token.Equals("/"))
+                if (token == "*" || token == "/")
                 {
                     operators.Push(token);
+                    continue;
                 }
+
+                //Check if token is "(" or ")"
+                if (token == "(")
+                {
+                    operators.Push(token);
+                    continue;
+                }
+
+                if (token == ")")
+                {
+                    //Step 1 from algorithm
+                    if (operators.TryPeek(out string? peekOp))
+                    {
+                        if(peekOp == "+" || peekOp == "-")
+                        {
+                            if (integers.Count < 2)
+                            {
+                                throw new ArgumentException();
+                            }
+                            else
+                            {
+                                integers.Push(Operate(integers.Pop(), integers.Pop(), operators.Pop()));
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        throw new ArgumentException();
+                    }
+
+                    //Step 2 from algorithm
+                    if (!operators.TryPop(out string? popOp) || popOp != "(")
+                    {
+                        throw new ArgumentException();
+                    }   
+
+                    //Step 3 from algorithm
+                    if (operators.TryPeek(out peekOp)
+                        && (peekOp == "*" || peekOp == "/"))
+                    {
+                        if (integers.Count < 2)
+                        {
+                            throw new ArgumentException();
+                        }
+                        else
+                        {
+                            integers.Push(Operate(integers.Pop(), integers.Pop(), operators.Pop()));
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (token == "")
+                    continue;
+
+                //Invalid token
+                throw new ArgumentException();
             }
+
             if(operators.Count == 0)
             {
                 if(integers.Count != 1)
@@ -112,7 +174,9 @@ namespace FormulaEvaluator
                 }
                 else
                 {
-                    integers.Push(Operate(integers.Pop(), integers.Pop(), operators.Pop()));
+                    //This time subtraction needs to be done the other way round
+                    int num1 = integers.Pop();
+                    integers.Push(Operate(integers.Pop(), num1, operators.Pop()));
                 }
             }
             return integers.Pop();
@@ -127,13 +191,14 @@ namespace FormulaEvaluator
         /// <param name="operation"></param>
         /// <returns>result of num1 operation num2</returns>
         /// <exception cref="ArgumentException"> throws if trying to divide by 0</exception>
-        public static int Operate(int num1, int num2, string operation)
+        private static int Operate(int num1, int num2, string operation)
         {
-            //Operation is garunteed to be + - * /
+            //Operation should be + - * /
             switch (operation)
             {
                 case "/":
                     if (num2 == 0)
+                        //divide by 0 error
                         throw new ArgumentException();
                     return num1 / num2;
                 case "*":
@@ -143,7 +208,7 @@ namespace FormulaEvaluator
                 case "-":
                     return num1 - num2;
                 default:
-                    //this path will never be reached
+                    //if incorrect math operation is sent
                     throw new ArgumentException();
             }
         }
