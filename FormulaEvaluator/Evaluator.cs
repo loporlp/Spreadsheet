@@ -91,7 +91,8 @@ namespace FormulaEvaluator
                     {
                         if (integers.Count < 2)
                             throw new ArgumentException();
-                        integers.Push(Operate(integers.Pop(), integers.Pop(), operators.Pop()));
+                        int popNum = integers.Pop();
+                        integers.Push(Operate(integers.Pop(), popNum, operators.Pop()));
                     }
 
                     operators.Push(token);
@@ -125,7 +126,9 @@ namespace FormulaEvaluator
                             }
                             else
                             {
-                                integers.Push(Operate(integers.Pop(), integers.Pop(), operators.Pop()));
+                                int popNum = integers.Pop();
+                                integers.Push(Operate(integers.Pop(), popNum, operators.Pop()));
+
                             }
                         }
                         

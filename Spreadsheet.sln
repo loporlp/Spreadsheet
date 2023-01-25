@@ -10,7 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaEvaluatorTester", "FormulaEvaluatorTester\FormulaEvaluatorTester.csproj", "{9E1A805C-ABD2-4E19-9C77-EDFB893B9C62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormulaEvaluatorTester", "FormulaEvaluatorTester\FormulaEvaluatorTester.csproj", "{9E1A805C-ABD2-4E19-9C77-EDFB893B9C62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GradingTests", "GradingTests\GradingTests.csproj", "{66740101-CA60-44A2-88C3-09544CEC2D56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{9E1A805C-ABD2-4E19-9C77-EDFB893B9C62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E1A805C-ABD2-4E19-9C77-EDFB893B9C62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E1A805C-ABD2-4E19-9C77-EDFB893B9C62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66740101-CA60-44A2-88C3-09544CEC2D56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66740101-CA60-44A2-88C3-09544CEC2D56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66740101-CA60-44A2-88C3-09544CEC2D56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66740101-CA60-44A2-88C3-09544CEC2D56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

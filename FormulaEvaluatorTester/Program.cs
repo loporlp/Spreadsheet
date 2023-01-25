@@ -20,6 +20,8 @@ Console.WriteLine(Evaluator.Evaluate("2*8", null) == 16);
 Console.WriteLine(Evaluator.Evaluate("2*     8", null) == 16);
 Console.WriteLine(Evaluator.Evaluate("20 * AB132", (x) => 10) == 200);
 Console.WriteLine(Evaluator.Evaluate("(((7 + 8) * (16 / 4) * 4 )+ 13) + 100/10 + 5/5*10", null) == 273 );
+Console.WriteLine("FAILED TEST");
+Console.WriteLine(Evaluator.Evaluate("y1*3-8/2+4*(8-9*2)/14*x7", s => (s == "x7") ? 1 : 4));
 
 //Testing Basic Division
 Console.WriteLine("Division Tests");
