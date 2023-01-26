@@ -181,17 +181,26 @@ namespace SpreadsheetUtilities
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
-            dependents[s].Clear();
+            if (!dependents.ContainsKey(s))
+                return;
 
-            foreach (string dependent in dependents[s])
+            foreach (string r in dependents[s])
             {
-                dependees[dependent].Remove(s);
+                if (dependees[r].Count == 1)
+                {
+                    dependees.Remove(r);
+                } else
+                {
+                    dependees[r].Remove(s);
+                }
                 size--;
             }
 
-            foreach(string newDependent in newDependents)
+            dependents[s].Clear();
+
+            foreach (string t in newDependents)
             {
-                this.AddDependency(s, newDependent);
+                this.AddDependency(s, t);
             }
         }
         /// <summary>
@@ -200,7 +209,28 @@ namespace SpreadsheetUtilities
         /// </summary>
         public void ReplaceDependees(string s, IEnumerable<string> newDependees)
         {
-            dependees[s] = newDependees.ToList<string>();
+            if (!dependees.ContainsKey(s))
+                return;
+
+            foreach (string r in dependees[s])
+            {
+                if (dependents[r].Count == 1)
+                {
+                    dependents.Remove(r);
+                }
+                else
+                {
+                    dependents[r].Remove(s);
+                }
+                size--;
+            }
+
+            dependees[s].Clear();
+
+            foreach (string t in newDependees)
+            {
+                this.AddDependency(t, s);
+            }
         }
     }
 }
