@@ -17,6 +17,5 @@ expressions and evaluate them producting an answer. Additionaly it has a Library
 a dependency graph to soon implement with the evaluator
 
 # Time Expenditures:
-s
     1. Assignment One:   Predicted Hours:          9       Actual Hours:   7
     2. Assignment Two:   Predicted Hours:          7       Acutal Hours:   5
