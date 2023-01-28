@@ -10,37 +10,51 @@ using System.Linq;
 using System.Text;
 namespace SpreadsheetUtilities
 {
-  /// <summary>
-  /// (s1,t1) is an ordered pair of strings
-  /// t1 depends on s1; s1 must be evaluated before t1
-  /// 
-  /// A DependencyGraph can be modeled as a set of ordered pairs of strings.  Two ordered pairs
-  /// (s1,t1) and (s2,t2) are considered equal if and only if s1 equals s2 and t1 equals t2.
-  /// Recall that sets never contain duplicates.  If an attempt is made to add an element to a
-  /// set, and the element is already in the set, the set remains unchanged.
-  /// 
-  /// Given a DependencyGraph DG:
-  /// 
-  ///    (1) If s is a string, the set of all strings t such that (s,t) is in DG iscalled dependents(s).
-  ///        (The set of things that depend on s)    
-  ///        
-  ///    (2) If s is a string, the set of all strings t such that (t,s) is in DG iscalled dependees(s).
-  ///        (The set of things that s depends on) 
-  //
-  // For example, suppose DG = {("a", "b"), ("a", "c"), ("b", "d"), ("d", "d")}
-  //     dependents("a") = {"b", "c"}
-  //     dependents("b") = {"d"}
-  //     dependents("c") = {}
-  //     dependents("d") = {"d"}
-  //     dependees("a") = {}
-  //     dependees("b") = {"a"}
-  //     dependees("c") = {"a"}
-  //     dependees("d") = {"b", "d"}
-  /// </summary>
-  public class DependencyGraph
+    /// <summary>
+    /// Author: Mason Sansom
+    /// Partner: -none-
+    /// Date: 25-Jan-2023
+    /// Course:    CS 3500, University of Utah, School of Computing
+    /// Copyright: CS 3500 and Mason Sansom - This work may not 
+    ///            be copied for use in Academic Coursework.
+    ///
+    /// I, Mason Sansom, certify that I wrote this code from the skeleton implementation 
+    /// provided and
+    /// All references used in the completion of the assignments are cited 
+    /// in my README file.
+    ///
+    /// File Contents
+    /// 
+    /// (s1,t1) is an ordered pair of strings
+    /// t1 depends on s1; s1 must be evaluated before t1
+    /// 
+    /// A DependencyGraph can be modeled as a set of ordered pairs of strings.  Two ordered pairs
+    /// (s1,t1) and (s2,t2) are considered equal if and only if s1 equals s2 and t1 equals t2.
+    /// Recall that sets never contain duplicates.  If an attempt is made to add an element to a
+    /// set, and the element is already in the set, the set remains unchanged.
+    /// 
+    /// Given a DependencyGraph DG:
+    /// 
+    ///    (1) If s is a string, the set of all strings t such that (s,t) is in DG iscalled dependents(s).
+    ///        (The set of things that depend on s)    
+    ///        
+    ///    (2) If s is a string, the set of all strings t such that (t,s) is in DG iscalled dependees(s).
+    ///        (The set of things that s depends on) 
+    //
+    // For example, suppose DG = {("a", "b"), ("a", "c"), ("b", "d"), ("d", "d")}
+    //     dependents("a") = {"b", "c"}
+    //     dependents("b") = {"d"}
+    //     dependents("c") = {}
+    //     dependents("d") = {"d"}
+    //     dependees("a") = {}
+    //     dependees("b") = {"a"}
+    //     dependees("c") = {"a"}
+    //     dependees("d") = {"b", "d"}
+    /// </summary>
+    public class DependencyGraph
     {
-        private Dictionary<String, List<String>> dependents;
-        private Dictionary<String, List<String>> dependees;
+        private Dictionary<String, HashSet<string>> dependents;
+        private Dictionary<String, HashSet<string>> dependees;
         private int size;
 
         /// <summary>
@@ -48,8 +62,8 @@ namespace SpreadsheetUtilities
         /// </summary>
         public DependencyGraph()
         {
-            dependents = new Dictionary<String, List<String>>();
-            dependees = new Dictionary<String, List<String>>();
+            dependents = new Dictionary<String, HashSet<string>>();
+            dependees = new Dictionary<String, HashSet<string>>();
             size = 0;
         }
         /// <summary>
@@ -75,6 +89,8 @@ namespace SpreadsheetUtilities
         /// </summary>
         public bool HasDependents(string s)
         {
+            if(!dependents.ContainsKey(s)) 
+                return false;
             return dependents[s].Count() != 0;
         }
         /// <summary>
@@ -82,6 +98,8 @@ namespace SpreadsheetUtilities
         /// </summary>
         public bool HasDependees(string s)
         {
+            if(!dependees.ContainsKey(s))
+                return false;
             return dependees[s].Count() != 0;
         }
         /// <summary>
@@ -90,7 +108,7 @@ namespace SpreadsheetUtilities
         public IEnumerable<string> GetDependents(string s)
         {
             if (!dependents.ContainsKey(s) || dependents[s].Count == 0)
-                return new List<string>();
+                return new HashSet<string>();
             return dependents[s];
         }
         /// <summary>
@@ -99,7 +117,7 @@ namespace SpreadsheetUtilities
         public IEnumerable<string> GetDependees(string s)
         {
             if (!dependees.ContainsKey(s) || dependees[s].Count == 0)
-                return new List<string>();
+                return new HashSet<string>();
             return dependees[s];
         }
         /// <summary>
@@ -123,7 +141,7 @@ namespace SpreadsheetUtilities
                 }
             } else
             {
-                dependents.Add(s, new List<string> { t });
+                dependents.Add(s, new HashSet<string> { t });
                 size++;
             }
 
@@ -136,7 +154,7 @@ namespace SpreadsheetUtilities
             }
             else
             {
-                dependees.Add(t, new List<string> { s });
+                dependees.Add(t, new HashSet<string> { s });
             }
 
         }
