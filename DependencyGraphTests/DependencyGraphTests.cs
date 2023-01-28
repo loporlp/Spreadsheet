@@ -222,5 +222,140 @@ namespace DevelopmentTests
         HashSet<string>(t.GetDependees(letters[i]))));
             }
         }
+        /// <summary>
+        /// Testing if the x being looked for
+        /// doesn't exist
+        /// </summary>
+        [TestMethod()]
+        public void HasDependentsDoesntExist()
+        {
+            DependencyGraph t = new DependencyGraph();
+            Assert.IsFalse(t.HasDependents("s"));
+        }
+        /// <summary>
+        /// Tests if an item has dependents
+        /// </summary>
+        [TestMethod()]
+        public void HasDependents()
+        {
+            DependencyGraph t = new DependencyGraph();
+            t.AddDependency("t", "s");
+            Assert.IsTrue(t.HasDependents("t"));
+        }
+        /// <summary>
+        /// Tests if a given object doesnt have dependents
+        /// </summary>
+        [TestMethod()]
+        public void DoesntHaveDependents()
+        {
+            DependencyGraph t = new DependencyGraph();
+            t.AddDependency("t", "s");
+            Assert.IsFalse(t.HasDependents("s"));
+        }
+        /// <summary>
+        /// Checks if the given object
+        /// doesnt exist 
+        /// </summary>
+        [TestMethod()]
+        public void HasDependeesDoesntExist()
+        {
+            DependencyGraph t = new DependencyGraph();
+            Assert.IsFalse(t.HasDependees("s"));
+        }
+        /// <summary>
+        /// Checks if the given object has dependees
+        /// </summary>
+        [TestMethod()]
+        public void HasDependees()
+        {
+            DependencyGraph t = new DependencyGraph();
+            t.AddDependency("t", "s");
+            Assert.IsTrue(t.HasDependees("s"));
+        }
+        /// <summary>
+        /// Checks if the given object doesnt
+        /// have dependees
+        /// </summary>
+        [TestMethod()]
+        public void DoesntHaveDependees()
+        {
+            DependencyGraph t = new DependencyGraph();
+            t.AddDependency("t", "s");
+            Assert.IsFalse(t.HasDependees("t"));
+        }
+        /// <summary>
+        /// Tests replacing dependees
+        /// </summary>
+        [TestMethod()]
+        public void ReplaceDependees()
+        {
+            DependencyGraph t = new DependencyGraph();
+            List<String> dependees = new List<string>{"w", "h" };
+            t.AddDependency("t", "s");
+            t.ReplaceDependees("s", dependees);
+            Assert.IsTrue(t.GetDependees("s").Contains("w"));
+            Assert.IsTrue(t.GetDependees("s").Contains("h"));
+            Assert.IsFalse(t.GetDependees("s").Contains("t"));
+            Assert.IsTrue(t.GetDependents("w").Contains("s"));
+            Assert.IsTrue(t.GetDependents("h").Contains("s"));
+            Assert.IsFalse(t.HasDependents("t"));
+        }
+        /// <summary>
+        /// Checks an edge case of replacing 
+        /// Dependees
+        /// </summary>
+        [TestMethod()]
+        public void ReplaceManyDependees()
+        {
+            DependencyGraph t = new DependencyGraph();
+            List<String> dependees = new List<string> { "w", "h" };
+            t.AddDependency("t", "s");
+            t.AddDependency("t", "x");
+            t.ReplaceDependees("s", dependees);
+            Assert.IsTrue(t.GetDependees("s").Contains("w"));
+            Assert.IsTrue(t.GetDependees("s").Contains("h"));
+            Assert.IsFalse(t.GetDependees("s").Contains("t"));
+            Assert.IsTrue(t.GetDependents("w").Contains("s"));
+            Assert.IsTrue(t.GetDependents("h").Contains("s"));
+            Assert.IsTrue(t.GetDependents("t").Contains("x"));
+            Assert.IsFalse(t.GetDependents("t").Contains("s"));
+        }
+        /// <summary>
+        /// Tests replacing dependents
+        /// </summary>
+        [TestMethod()]
+        public void ReplaceDependents()
+        {
+            DependencyGraph t = new DependencyGraph();
+            List<String> dependents = new List<string> { "w", "h" };
+            t.AddDependency("t", "s");
+            t.ReplaceDependents("t", dependents);
+            Assert.IsTrue(t.GetDependents("t").Contains("w"));
+            Assert.IsTrue(t.GetDependents("t").Contains("h"));
+            Assert.IsFalse(t.GetDependents("t").Contains("t"));
+            Assert.IsTrue(t.GetDependees("w").Contains("t"));
+            Assert.IsTrue(t.GetDependees("h").Contains("t"));
+            Assert.IsFalse(t.HasDependents("s"));
+        }
+        /// <summary>
+        /// Tests an edge case of replacing dependees
+        /// </summary>
+        [TestMethod()]
+        public void ReplaceManyDependents()
+        {
+            DependencyGraph t = new DependencyGraph();
+            List<String> dependents = new List<string> { "w", "h" };
+            t.AddDependency("t", "s");
+            t.AddDependency("x", "s");
+            t.ReplaceDependents("t", dependents);
+            Assert.IsTrue(t.GetDependents("t").Contains("w"));
+            Assert.IsTrue(t.GetDependents("t").Contains("h"));
+            Assert.IsFalse(t.GetDependents("t").Contains("t"));
+            Assert.IsTrue(t.GetDependees("w").Contains("t"));
+            Assert.IsTrue(t.GetDependees("h").Contains("t"));
+            Assert.IsFalse(t.HasDependents("s"));
+            Assert.IsTrue(t.GetDependees("s").Contains("x"));
+            Assert.IsFalse(t.GetDependees("s").Contains("t"));
+        }
     }
 }
