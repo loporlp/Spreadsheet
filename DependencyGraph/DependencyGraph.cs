@@ -82,7 +82,12 @@ namespace SpreadsheetUtilities
         /// </summary>
         public int this[string s]
             {
-                get { return dependees[s].Count(); }
+                get
+                {
+                if (!dependees.ContainsKey(s))
+                    return 0;
+                return dependees[s].Count(); 
+                }
             }
         /// <summary>
         /// Reports whether dependents(s) is non-empty.
@@ -199,22 +204,24 @@ namespace SpreadsheetUtilities
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
-            if (!dependents.ContainsKey(s))
-                return;
-
-            foreach (string r in dependents[s])
+            if (dependents.ContainsKey(s))
             {
-                if (dependees[r].Count == 1)
+                foreach (string r in dependents[s])
                 {
-                    dependees.Remove(r);
-                } else
-                {
-                    dependees[r].Remove(s);
+                    if (dependees[r].Count == 1)
+                    {
+                        dependees.Remove(r);
+                    }
+                    else
+                    {
+                        dependees[r].Remove(s);
+                    }
+                    size--;
                 }
-                size--;
+                dependents[s].Clear();
             }
 
-            dependents[s].Clear();
+            
 
             foreach (string t in newDependents)
             {
@@ -227,23 +234,24 @@ namespace SpreadsheetUtilities
         /// </summary>
         public void ReplaceDependees(string s, IEnumerable<string> newDependees)
         {
-            if (!dependees.ContainsKey(s))
-                return;
-
-            foreach (string r in dependees[s])
+            if (dependees.ContainsKey(s))
             {
-                if (dependents[r].Count == 1)
+                foreach (string r in dependees[s])
                 {
-                    dependents.Remove(r);
+                    if (dependents[r].Count == 1)
+                    {
+                        dependents.Remove(r);
+                    }
+                    else
+                    {
+                        dependents[r].Remove(s);
+                    }
+                    size--;
                 }
-                else
-                {
-                    dependents[r].Remove(s);
-                }
-                size--;
+                dependees[s].Clear();
             }
 
-            dependees[s].Clear();
+            
 
             foreach (string t in newDependees)
             {
