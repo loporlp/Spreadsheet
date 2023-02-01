@@ -68,3 +68,7 @@ catch (ArgumentException)
     Console.WriteLine("True");
 }
 
+
+Console.WriteLine("REGEX TEST");
+Console.WriteLine(Regex.IsMatch("R2D2", @"[a-zA-Z_][a-zA-Z0-9_]*$"));
+
