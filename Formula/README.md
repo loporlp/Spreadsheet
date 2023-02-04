@@ -11,13 +11,12 @@ Copyright:  CS 3500 and Mason Sansom - This work may not be copied for use in Ac
 
 # Comments to Evaluators:
 
-The parts of the Formula class that don't have test coverage
-were not changed from the FormulaEvaluator and function perfectly.
+I have no comments for Evaluators
 
 # Assignment Specific Topics
 
-This class does extensive testing on the Formula class.
-Additionaly it has full code coverage and tests many different edge cases.
+This class is a refactor of FormulatEvaluator and now stores the 
+Formula given and also works with floating point values and scientific notation
 
 # Consulted Peers:
 
@@ -25,4 +24,5 @@ I did not run into any trouble and didn't have to consult anybody.
 
 # References:
 
-I Refactored some tests from PS1GradingTests
+1. https://stackoverflow.com/questions/4525854/remove-trailing-zeros
+2. https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference
