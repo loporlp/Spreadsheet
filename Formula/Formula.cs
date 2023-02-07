@@ -110,7 +110,10 @@ namespace SpreadsheetUtilities
                 }
                 else
                 {
-                    variables.Add(normalize(token));
+                    if (!variables.Contains(token))
+                    {
+                        variables.Add(normalize(token));
+                    }
                 }
 
                 if (!isValid(normalize(token)))
@@ -118,7 +121,15 @@ namespace SpreadsheetUtilities
                     throw new FormulaFormatException("Variable is not valid");
                 }
             }
-
+            object s = this.Evaluate(s => 1);
+            if ( s is FormulaError)
+            {
+                FormulaError error = (FormulaError)s;
+                if(error.Reason != "Invalid Syntax, Unable to Divide by Zero")
+                {
+                    throw new FormulaFormatException("Not A Valid Format");
+                }
+            }
 
         }
 
