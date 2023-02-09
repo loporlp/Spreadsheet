@@ -6,8 +6,11 @@ namespace SpreadsheetTests
     [TestClass]
     public class SpreadsheetTests
     {
+        /// <summary>
+        /// Tests setting with Double
+        /// </summary>
         [TestMethod]
-        public void SetCellContents()
+        public void SetCellContentsDouble()
         {
             Spreadsheet sheet = new Spreadsheet();
             sheet.SetCellContents("A1", 50);
@@ -15,6 +18,12 @@ namespace SpreadsheetTests
             Assert.AreEqual(sheet.GetCellContents("A1"), 50.0);
         }
 
+        //TODO: SET CONTENTS OTHER OVERRIDES
+
+        /// <summary>
+        /// Gets the cell contents of cells
+        /// that aren't in the spreadsheet
+        /// </summary>
         [TestMethod]
         public void GetCellContentsEmpty()
         {
@@ -23,6 +32,9 @@ namespace SpreadsheetTests
             Assert.AreEqual(sheet.GetCellContents("_A1"), "");
         }
 
+        /// <summary>
+        /// Calls get Cell on an invalid cell name
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(InvalidNameException))]
         public void GetCellBadName()
@@ -31,6 +43,9 @@ namespace SpreadsheetTests
             sheet.GetCellContents("*fs");
         }
 
+        /// <summary>
+        /// Calls setCell on an invalid cell name
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(InvalidNameException))]
         public void SetCellBadName()
@@ -39,6 +54,10 @@ namespace SpreadsheetTests
             sheet.SetCellContents("*fs", 7);
         }
 
+        /// <summary>
+        /// Get the Dependents of the Cell being added
+        /// using the SetCell Function
+        /// </summary>
         [TestMethod]
         public void SetCellDepends()
         {

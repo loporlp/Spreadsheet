@@ -39,7 +39,7 @@ namespace FormulaEvaluator
         /// <exception cref="ArgumentException"> thows if invalid expression is given
         /// like divide by 0 or invalid Infix notation is also thrown if a variable is
         /// unable to be looked up using the Lookup function</exception>
-        public static int Evaluate(String expression, Lookup variableEvaluator)
+        public static int Evaluate(String expression, Lookup? variableEvaluator)
         {
             Stack<int> integers = new Stack<int>();
             Stack<string> operators = new Stack<string>();
@@ -56,6 +56,11 @@ namespace FormulaEvaluator
                 {
                     try
                     {
+                        if(variableEvaluator is null)
+                        {
+                            throw new Exception();
+                        }
+
                         token = variableEvaluator(token).ToString();
                     } catch
                     {
