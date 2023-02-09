@@ -61,14 +61,25 @@ namespace SS
         /// <inheritdoc/>
         public override ISet<string> SetCellContents(string name, double number)
         {
-            if(cells.ContainsKey(name))
+            if (!Regex.IsMatch(name, @"^[a-zA-Z_][a-zA-Z_0-9]*$"))
+            {
+                throw new InvalidNameException();
+            }
+
+            if (cells.ContainsKey(name))
             {
                 cells[name] = new Cell(number);
+            }
+            else
+            {
+                cells.Add(name, new Cell(number));
             }
 
             HashSet<string> set = new HashSet<string>();
 
-            foreach(string dependee in dependencyGraph.GetDependees(name))
+            set.Add(name);
+
+            foreach (string dependee in dependencyGraph.GetDependees(name))
             {
                 set.Add(dependee);
             }
@@ -79,12 +90,19 @@ namespace SS
         /// <inheritdoc/>
         public override ISet<string> SetCellContents(string name, string text)
         {
+            if (!Regex.IsMatch(name, @"^[a-zA-Z_][a-zA-Z_0-9]*$"))
+            {
+                throw new InvalidNameException();
+            }
+
             if (cells.ContainsKey(name))
             {
                 cells[name] = new Cell(text);
             }
 
             HashSet<string> set = new HashSet<string>();
+
+            set.Add(name);
 
             foreach (string dependee in dependencyGraph.GetDependees(name))
             {
@@ -97,6 +115,11 @@ namespace SS
         /// <inheritdoc/>
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
+            if (!Regex.IsMatch(name, @"^[a-zA-Z_][a-zA-Z_0-9]*$"))
+            {
+                throw new InvalidNameException();
+            }
+
             if (cells.ContainsKey(name))
             {
                 cells[name] = new Cell(formula);
