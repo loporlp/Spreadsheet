@@ -99,6 +99,10 @@ namespace SS
             {
                 cells[name] = new Cell(text);
             }
+            else
+            {
+                cells.Add(name, new Cell(text));
+            }
 
             HashSet<string> set = new HashSet<string>();
 
@@ -124,8 +128,12 @@ namespace SS
             {
                 cells[name] = new Cell(formula);
             }
+            else
+            {
+                cells.Add(name, new Cell(formula));
+            }
 
-            foreach(string variable in formula.GetVariables())
+            foreach (string variable in formula.GetVariables())
             {
                 dependencyGraph.AddDependency(name, variable);
             }
@@ -156,15 +164,6 @@ namespace SS
             public Cell(object content)
             {
                 this.content = content;
-            }
-            /// <summary>
-            /// Sets the Value of the Cell Object
-            /// </summary>
-            /// <param name="item"></param>
-
-            public void setCell(object item)
-            {
-                content = item;
             }
             /// <summary>
             /// Returns the Value of the Cell Obeject
