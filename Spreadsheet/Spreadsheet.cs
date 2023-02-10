@@ -55,7 +55,16 @@ namespace SS
         /// <inheritdoc/>
         public override IEnumerable<string> GetNamesOfAllNonemptyCells()
         {
-            return cells.Keys;
+            HashSet<string> names = new HashSet<string>();
+            foreach(string cellName in cells.Keys)
+            {
+                if(cells[cellName].getContent().ToString() != "")
+                {
+                    names.Add(cellName);
+                }
+            }
+
+            return names;
         }
 
         /// <inheritdoc/>
@@ -97,6 +106,7 @@ namespace SS
 
             if (cells.ContainsKey(name))
             {
+                dependencyGraph.ReplaceDependents(name, new List<string>());
                 cells[name] = new Cell(text);
             }
             else
@@ -119,13 +129,21 @@ namespace SS
         /// <inheritdoc/>
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
+            if(name is null || formula is null)
+            {
+                throw new ArgumentNullException();
+            }
+
             if (!Regex.IsMatch(name, @"^[a-zA-Z_][a-zA-Z_0-9]*$"))
             {
                 throw new InvalidNameException();
             }
 
+            object oldItem = "";
+
             if (cells.ContainsKey(name))
             {
+                oldItem = cells[name];
                 cells[name] = new Cell(formula);
             }
             else
@@ -136,6 +154,24 @@ namespace SS
             foreach (string variable in formula.GetVariables())
             {
                 dependencyGraph.AddDependency(name, variable);
+            }
+
+            try
+            {
+                GetCellsToRecalculate(name);
+            }
+            catch (CircularException) 
+            {
+                if (oldItem is Formula)
+                {
+                    this.SetCellContents(name, (Formula)oldItem);
+                }
+                else
+                {
+                    this.SetCellContents(name, "");
+                } 
+                
+                throw new CircularException();
             }
 
             HashSet<string> set = new HashSet<string>();

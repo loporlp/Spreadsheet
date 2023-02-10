@@ -4,6 +4,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SpreadsheetTests
 {
+
+    /// <summary>
+    ///This is a test class for Spreadsheet.cs and is intended
+    ///to contain all Spreadsheet.cs Unit Tests
+    ///</summary>
     [TestClass]
     public class SpreadsheetTests
     {
@@ -246,5 +251,35 @@ namespace SpreadsheetTests
 
             Assert.AreEqual(0, names.Count);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(CircularException))]
+        public void SetCircular()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetCellContents("A1", new Formula("B1 + 6"));
+            sheet.SetCellContents("B1", new Formula("C1 + 5"));
+            sheet.SetCellContents("C1", new Formula("A1 + 5")); 
+        }
+
+        [TestMethod]
+        public void SetCircularStaysTheSame()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetCellContents("A1", new Formula("B1 + 6"));
+            sheet.SetCellContents("B1", new Formula("C1 + 5"));
+            try
+            {
+                sheet.SetCellContents("C1", new Formula("A1 + 5"));
+            } 
+            catch (CircularException)
+            {
+                Assert.IsFalse(sheet.GetNamesOfAllNonemptyCells().Contains("C1"));
+            }
+            
+
+
+        }
+
     }
 }
