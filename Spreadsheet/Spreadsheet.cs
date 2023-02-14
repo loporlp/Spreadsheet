@@ -77,6 +77,8 @@ namespace SS
 
             if (cells.ContainsKey(name))
             {
+                dependencyGraph.ReplaceDependents(name, new List<string>());
+
                 cells[name] = new Cell(number);
             }
             else
@@ -86,9 +88,7 @@ namespace SS
 
             HashSet<string> set = new HashSet<string>();
 
-            set.Add(name);
-
-            foreach (string dependee in dependencyGraph.GetDependees(name))
+            foreach (string dependee in this.GetCellsToRecalculate(name))
             {
                 set.Add(dependee);
             }
@@ -116,9 +116,7 @@ namespace SS
 
             HashSet<string> set = new HashSet<string>();
 
-            set.Add(name);
-
-            foreach (string dependee in dependencyGraph.GetDependees(name))
+            foreach (string dependee in this.GetCellsToRecalculate(name))
             {
                 set.Add(dependee);
             }
@@ -143,7 +141,8 @@ namespace SS
 
             if (cells.ContainsKey(name))
             {
-                oldItem = cells[name];
+                dependencyGraph.ReplaceDependents(name, new List<string>());
+                oldItem = cells[name].getContent();
                 cells[name] = new Cell(formula);
             }
             else
@@ -162,23 +161,32 @@ namespace SS
             }
             catch (CircularException) 
             {
+                foreach (string variable in formula.GetVariables())
+                {
+                    dependencyGraph.RemoveDependency(name, variable);
+                }
+
                 if (oldItem is Formula)
                 {
                     this.SetCellContents(name, (Formula)oldItem);
                 }
-                else
+                else if (oldItem is string)
                 {
-                    this.SetCellContents(name, "");
-                } 
+                    this.SetCellContents(name, (string)oldItem);
+                }
+                else 
+                {
+                    this.SetCellContents(name, (double)oldItem);
+                }
+
                 
+
                 throw new CircularException();
             }
 
             HashSet<string> set = new HashSet<string>();
 
-            set.Add(name);
-
-            foreach (string dependee in dependencyGraph.GetDependees(name))
+            foreach (string dependee in this.GetCellsToRecalculate(name))
             {
                 set.Add(dependee);
             }
@@ -189,7 +197,7 @@ namespace SS
         /// <inheritdoc/>
         protected override IEnumerable<string> GetDirectDependents(string name)
         {
-            return dependencyGraph.GetDependents(name);
+            return dependencyGraph.GetDependees(name);
         }
         /// <summary>
         /// Private Class Representing a Cell
