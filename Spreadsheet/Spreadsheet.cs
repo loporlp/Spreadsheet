@@ -78,7 +78,6 @@ namespace SS
             if (cells.ContainsKey(name))
             {
                 dependencyGraph.ReplaceDependents(name, new List<string>());
-
                 cells[name] = new Cell(number);
             }
             else
