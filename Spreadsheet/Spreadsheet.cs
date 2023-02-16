@@ -29,9 +29,31 @@ namespace SS
     {
         private Dictionary<string, Cell> cells;
         private DependencyGraph dependencyGraph;
+        private Func<string, bool> isValid;
+        private Func<string, string> normalize;
+        private string version;
 
-        public Spreadsheet() 
+        public override bool Changed { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
+
+        public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
         {
+            this.isValid = isValid;
+            this.normalize = normalize;
+            this.version = version;
+            cells = new Dictionary<string, Cell>();
+            dependencyGraph = new DependencyGraph();
+        }
+
+        public Spreadsheet(string filePath, Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
+        {
+            //TODO implement filePath
+        }
+
+        public Spreadsheet() : base(s => true, s => s, "default")
+        {
+            this.isValid = s => true;
+            this.normalize = s => s;
+            this.version = "default";
             cells = new Dictionary<string, Cell>();
             dependencyGraph = new DependencyGraph();
         }
@@ -39,7 +61,7 @@ namespace SS
         /// <inheritdoc/>
         public override object GetCellContents(string name)
         {
-            if(!Regex.IsMatch(name, @"^[a-zA-Z_][a-zA-Z_0-9]*$"))
+            if(!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$"))
             {
                 throw new InvalidNameException();
             }
@@ -68,9 +90,9 @@ namespace SS
         }
 
         /// <inheritdoc/>
-        public override ISet<string> SetCellContents(string name, double number)
+        protected override IList<string> SetCellContents(string name, double number)
         {
-            if (!Regex.IsMatch(name, @"^[a-zA-Z_][a-zA-Z_0-9]*$"))
+            if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$") || !isValid(name))
             {
                 throw new InvalidNameException();
             }
@@ -85,20 +107,20 @@ namespace SS
                 cells.Add(name, new Cell(number));
             }
 
-            HashSet<string> set = new HashSet<string>();
+            List<string> list = new List<string>();
 
             foreach (string dependee in this.GetCellsToRecalculate(name))
             {
-                set.Add(dependee);
+                list.Add(dependee);
             }
 
-            return set;
+            return list;
         }
 
         /// <inheritdoc/>
-        public override ISet<string> SetCellContents(string name, string text)
+        protected override IList<string> SetCellContents(string name, string text)
         {
-            if (!Regex.IsMatch(name, @"^[a-zA-Z_][a-zA-Z_0-9]*$"))
+            if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$") || !isValid(name))
             {
                 throw new InvalidNameException();
             }
@@ -113,25 +135,21 @@ namespace SS
                 cells.Add(name, new Cell(text));
             }
 
-            HashSet<string> set = new HashSet<string>();
+            List<string> list = new List<string>();
 
             foreach (string dependee in this.GetCellsToRecalculate(name))
             {
-                set.Add(dependee);
+                list.Add(dependee);
             }
 
-            return set;
+            return list;
         }
 
         /// <inheritdoc/>
-        public override ISet<string> SetCellContents(string name, Formula formula)
+        protected override IList<string> SetCellContents(string name, Formula formula)
         {
-            if(name is null || formula is null)
-            {
-                throw new ArgumentNullException();
-            }
 
-            if (!Regex.IsMatch(name, @"^[a-zA-Z_][a-zA-Z_0-9]*$"))
+            if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$") || !isValid(name))
             {
                 throw new InvalidNameException();
             }
@@ -183,14 +201,14 @@ namespace SS
                 throw new CircularException();
             }
 
-            HashSet<string> set = new HashSet<string>();
+            List<string> list = new List<string>();
 
             foreach (string dependee in this.GetCellsToRecalculate(name))
             {
-                set.Add(dependee);
+                list.Add(dependee);
             }
 
-            return set;
+            return list;
         }
 
         /// <inheritdoc/>
@@ -198,15 +216,66 @@ namespace SS
         {
             return dependencyGraph.GetDependees(name);
         }
+
+        public override IList<string> SetContentsOfCell(string name, string content)
+        {
+            if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$") || !isValid(name))
+            {
+                throw new InvalidNameException();
+            }
+
+            content = content.Trim();
+
+            if(double.TryParse(content, out double number))
+            {
+                return SetCellContents(name, number);
+            }
+
+            if (content.Count() > 1 && content[0].Equals('='))
+            {
+                object formula = new Formula(content[1..], normalize, isValid);
+
+                if(formula is FormulaError)
+                {
+                    throw new FormulaFormatException("Invalid Formula");
+                }
+
+                //This will throw a CircularException if one is created
+               return SetCellContents(name, (Formula)formula);
+            }
+
+            return SetCellContents(name, content);
+        }
+
+        public override string GetSavedVersion(string filename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Save(string filename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object GetCellValue(string name)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Private Class Representing a Cell
         /// </summary>
         private class Cell
         {
             private object content;
+            private object value;
             public Cell(object content)
             {
                 this.content = content;
+                if(content is Formula)
+                {
+                    this.value = (Formula)content;
+                }
             }
             /// <summary>
             /// Returns the Value of the Cell Obeject
