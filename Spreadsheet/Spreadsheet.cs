@@ -274,7 +274,12 @@ namespace SS
                 this.content = content;
                 if(content is Formula)
                 {
-                    this.value = (Formula)content;
+                    Formula form = (Formula)content;
+                  //  value = form.Evaluate();
+                }
+                else
+                {
+                    value = content;
                 }
             }
             /// <summary>
