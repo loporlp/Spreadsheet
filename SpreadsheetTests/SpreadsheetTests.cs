@@ -16,10 +16,10 @@ namespace SpreadsheetTests
         /// Tests setting with Double
         /// </summary>
         [TestMethod]
-        public void SetCellContentsDouble()
+        public void SetContentsOfCellDouble()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("A1", 50);
+            sheet.SetContentsOfCell("A1", "50");
 
             Assert.AreEqual(sheet.GetCellContents("A1"), 50.0);
         }
@@ -28,10 +28,10 @@ namespace SpreadsheetTests
         /// Tests setting with Formula
         /// </summary>
         [TestMethod]
-        public void SetCellContentsFormula()
+        public void SetContentsOfCellFormula()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("A1", new Formula("1 + 1"));
+            sheet.SetContentsOfCell("A1", "=1 + 1");
 
             Assert.AreEqual(sheet.GetCellContents("A1"), new Formula("1 + 1"));
         }
@@ -40,10 +40,10 @@ namespace SpreadsheetTests
         /// Tests setting with String
         /// </summary>
         [TestMethod]
-        public void SetCellContentsString()
+        public void SetContentsOfCellString()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("A1", "Word");
+            sheet.SetContentsOfCell("A1", "Word");
 
             Assert.AreEqual(sheet.GetCellContents("A1"), "Word");
         }
@@ -56,8 +56,8 @@ namespace SpreadsheetTests
         public void OverrideCellContentsDouble()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("A1", "word");
-            sheet.SetCellContents("A1", 50);
+            sheet.SetContentsOfCell("A1", "word");
+            sheet.SetContentsOfCell("A1", "50");
 
             Assert.AreEqual(sheet.GetCellContents("A1"), 50.0);
         }
@@ -70,10 +70,10 @@ namespace SpreadsheetTests
         public void OverrideCellContentsFormula()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("A1", 5);
-            sheet.SetCellContents("A1", new Formula("1 + 1"));
+            sheet.SetContentsOfCell("A1", "5");
+            sheet.SetContentsOfCell("A1", "=1 + 1");
 
-            Assert.AreEqual(sheet.GetCellContents("A1"), new Formula("1 + 1"));
+            Assert.AreEqual((Formula)sheet.GetCellContents("A1"), new Formula("1 + 1"));
         }
 
         /// <summary>
@@ -84,8 +84,8 @@ namespace SpreadsheetTests
         public void OverrideCellContentsString()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("A1", 5);
-            sheet.SetCellContents("A1", "Word");
+            sheet.SetContentsOfCell("A1", "5");
+            sheet.SetContentsOfCell("A1", "Word");
 
             Assert.AreEqual(sheet.GetCellContents("A1"), "Word");
         }
@@ -101,7 +101,7 @@ namespace SpreadsheetTests
         {
             Spreadsheet sheet = new Spreadsheet();
             Assert.AreEqual(sheet.GetCellContents("A1"), "");
-            Assert.AreEqual(sheet.GetCellContents("_A1"), "");
+            Assert.AreEqual(sheet.GetCellContents("B1"), "");
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace SpreadsheetTests
         public void SetCellBadName()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("*fs", 7);
+            sheet.SetContentsOfCell("*fs", "7");
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace SpreadsheetTests
         public void SetCellBadNameFormula()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("*fs", new Formula("4"));
+            sheet.SetContentsOfCell("*fs", "4");
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace SpreadsheetTests
         public void SetCellBadNameString()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("*fs", "Word");
+            sheet.SetContentsOfCell("*fs", "Word");
         }
 
         /// <summary>
@@ -158,9 +158,9 @@ namespace SpreadsheetTests
         public void SetCellDependsDouble()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("B1", new Formula("A1 * 17"));
-            sheet.SetCellContents("C1", new Formula("18 + A1"));
-            HashSet<string> set = sheet.SetCellContents("A1", 5).ToHashSet<string>();
+            sheet.SetContentsOfCell("B1", "=A1 * 17");
+            sheet.SetContentsOfCell("C1", "=18 + A1");
+            HashSet<string> set = sheet.SetContentsOfCell("A1", "5").ToHashSet<string>();
 
             Assert.IsTrue(set.Contains("A1"));
             Assert.IsTrue(set.Contains("B1"));
@@ -175,9 +175,9 @@ namespace SpreadsheetTests
         public void SetCellDependsString()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("B1", new Formula("A1 * 17"));
-            sheet.SetCellContents("C1", new Formula("18 + A1"));
-            HashSet<string> set = sheet.SetCellContents("A1", "Word").ToHashSet<string>();
+            sheet.SetContentsOfCell("B1", "=A1 * 17");
+            sheet.SetContentsOfCell("C1", "= 18 + A1");
+            HashSet<string> set = sheet.SetContentsOfCell("A1", "Word").ToHashSet<string>();
 
             Assert.IsTrue(set.Contains("A1"));
             Assert.IsTrue(set.Contains("B1"));
@@ -192,9 +192,9 @@ namespace SpreadsheetTests
         public void SetCellDependsFormula()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("B1", new Formula("A1 * 17"));
-            sheet.SetCellContents("C1", new Formula("18 + A1"));
-            HashSet<string> set = sheet.SetCellContents("A1", new Formula("D6 + H9")).ToHashSet<string>();
+            sheet.SetContentsOfCell("B1", "=A1 * 17");
+            sheet.SetContentsOfCell("C1", "=18 + A1");
+            HashSet<string> set = sheet.SetContentsOfCell("A1", "D6 + H9").ToHashSet<string>();
 
             Assert.IsTrue(set.Contains("A1"));
             Assert.IsTrue(set.Contains("B1"));
@@ -210,9 +210,9 @@ namespace SpreadsheetTests
         public void SetCellDependsDoubleVar()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("B1", new Formula("A1 * 17"));
-            sheet.SetCellContents("C1", new Formula("18 + A1 + A1"));
-            HashSet<string> set = sheet.SetCellContents("A1", 5).ToHashSet<string>();
+            sheet.SetContentsOfCell("B1", "=A1 * 17");
+            sheet.SetContentsOfCell("C1", "=18 + A1 + A1");
+            HashSet<string> set = sheet.SetContentsOfCell("A1", "5").ToHashSet<string>();
 
             Assert.IsTrue(set.Contains("A1"));
             Assert.IsTrue(set.Contains("B1"));
@@ -227,9 +227,9 @@ namespace SpreadsheetTests
         public void GetNonEmptyCells()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("A1", 5);
-            sheet.SetCellContents("B1", new Formula("A1 * 17"));
-            sheet.SetCellContents("C1", new Formula("18 + A1 + A1"));
+            sheet.SetContentsOfCell("A1", "5");
+            sheet.SetContentsOfCell("B1", "A1 * 17");
+            sheet.SetContentsOfCell("C1", "18 + A1 + A1");
 
             List<string> names = sheet.GetNamesOfAllNonemptyCells().ToList<string>();
 
@@ -257,20 +257,20 @@ namespace SpreadsheetTests
         public void SetCircular()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("A1", new Formula("B1 + 6"));
-            sheet.SetCellContents("B1", new Formula("C1 + 5"));
-            sheet.SetCellContents("C1", new Formula("A1 + 5")); 
+            sheet.SetContentsOfCell("A1", "=B1 + 6");
+            sheet.SetContentsOfCell("B1", "=C1 + 5");
+            sheet.SetContentsOfCell("C1", "=A1 + 5"); 
         }
 
         [TestMethod]
         public void SetCircularStaysTheSame()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetCellContents("A1", new Formula("B1 + 6"));
-            sheet.SetCellContents("B1", new Formula("C1 + 5"));
+            sheet.SetContentsOfCell("A1", "=B1 + 6");
+            sheet.SetContentsOfCell("B1", "=C1 + 5");
             try
             {
-                sheet.SetCellContents("C1", new Formula("A1 + 5"));
+                sheet.SetContentsOfCell("C1", "A1 + 5");
             } 
             catch (CircularException)
             {
