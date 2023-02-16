@@ -47,6 +47,7 @@ namespace SS
         public Spreadsheet(string filePath, Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
         {
             //TODO implement filePath
+            throw new NotImplementedException();
         }
 
         public Spreadsheet() : base(s => true, s => s, "default")
@@ -196,10 +197,12 @@ namespace SS
                     this.SetCellContents(name, (double)oldItem);
                 }
 
-                
-
                 throw new CircularException();
             }
+
+            Formula value = (Formula)cells[name].getContent();
+
+            cells[name].setValue(value.Evaluate(s => Lookup(name)));
 
             List<string> list = new List<string>();
 
@@ -259,7 +262,27 @@ namespace SS
 
         public override object GetCellValue(string name)
         {
-            throw new NotImplementedException();
+            if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$"))
+            {
+                throw new InvalidNameException();
+            }
+
+            if (cells.ContainsKey(name))
+            {
+                return cells[name].getValue();
+            }
+
+            return "";
+        }
+
+        public double Lookup(string name)
+        {
+            if(cells.ContainsKey(name) && double.TryParse(cells[name].getValue().ToString(), out double num) )
+            {
+                return num;
+            }
+            
+            throw new ArgumentException();
         }
 
         /// <summary>
@@ -272,15 +295,7 @@ namespace SS
             public Cell(object content)
             {
                 this.content = content;
-                if(content is Formula)
-                {
-                    Formula form = (Formula)content;
-                  //  value = form.Evaluate();
-                }
-                else
-                {
-                    value = content;
-                }
+                value = content;
             }
             /// <summary>
             /// Returns the Value of the Cell Obeject
@@ -289,6 +304,16 @@ namespace SS
             public object getContent()
             {
                 return content;
+            }
+
+            public void setValue(object newVal)
+            {
+                value = newVal;
+            }
+
+            public object getValue()
+            {
+                return value;
             }
         }
     }

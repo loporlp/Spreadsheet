@@ -276,9 +276,6 @@ namespace SpreadsheetTests
             {
                 Assert.IsFalse(sheet.GetNamesOfAllNonemptyCells().Contains("C1"));
             }
-            
-
-
         }
 
     }
