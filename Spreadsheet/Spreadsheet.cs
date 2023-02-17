@@ -227,14 +227,14 @@ namespace SS
                 throw new InvalidNameException();
             }
 
+            IList<string> cellsToCalculate = new List<string>();
             content = content.Trim();
 
             if(double.TryParse(content, out double number))
             {
-                return SetCellContents(name, number);
+                cellsToCalculate = SetCellContents(name, number);
             }
-
-            if (content.Count() > 1 && content[0].Equals('='))
+            else if (content.Count() > 1 && content[0].Equals('='))
             {
                 object formula = new Formula(content[1..], normalize, isValid);
 
@@ -244,10 +244,24 @@ namespace SS
                 }
 
                 //This will throw a CircularException if one is created
-               return SetCellContents(name, (Formula)formula);
+               cellsToCalculate = SetCellContents(name, (Formula)formula);
+            }
+            else
+            {
+                cellsToCalculate = SetCellContents(name, content);
+            }
+            
+            foreach(String cellName in cellsToCalculate) 
+            {
+                if (cells[cellName].getContent() is Formula)
+                {
+                    Formula form = (Formula)cells[cellName].getContent();
+                    cells[cellName].setValue(form.Evaluate(s => Lookup(s)));
+                }
             }
 
-            return SetCellContents(name, content);
+            return cellsToCalculate;
+
         }
 
         public override string GetSavedVersion(string filename)
@@ -277,12 +291,16 @@ namespace SS
 
         public double Lookup(string name)
         {
-            if(cells.ContainsKey(name) && double.TryParse(cells[name].getValue().ToString(), out double num) )
+            try
             {
+                double num = (double)GetCellValue(name);
                 return num;
+
             }
-            
-            throw new ArgumentException();
+            catch(Exception)
+            {
+                throw new ArgumentException();
+            }  
         }
 
         /// <summary>
