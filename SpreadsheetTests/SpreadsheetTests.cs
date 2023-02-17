@@ -295,5 +295,25 @@ namespace SpreadsheetTests
             Assert.AreEqual((double)sheet.GetCellValue("A1"), 10);
         }
 
+        [TestMethod]
+        public void CellValueFromOtherCellsComplex()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("A6", "5");
+            sheet.SetContentsOfCell("A2", "=A3 + 5");
+            sheet.SetContentsOfCell("A1", "=A2 + 5");           
+            sheet.SetContentsOfCell("A4", "=A5 + A6");
+            sheet.SetContentsOfCell("A3", "=A4 + 5");
+            sheet.SetContentsOfCell("A5", "5");
+            Assert.AreEqual((double)sheet.GetCellValue("A1"), 25);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void InvalidFormula()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("A1", "=B1 + ?");
+        }
     }
 }
