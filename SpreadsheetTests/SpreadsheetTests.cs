@@ -45,7 +45,7 @@ namespace SpreadsheetTests
             Spreadsheet sheet = new Spreadsheet();
             sheet.SetContentsOfCell("A1", "=1 + 1");
 
-            Assert.AreEqual(sheet.GetCellContents("A1"), new Formula("1 + 1"));
+            Assert.AreEqual(sheet.GetCellContents("A1"), "=1+1");
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace SpreadsheetTests
             sheet.SetContentsOfCell("A1", "5");
             sheet.SetContentsOfCell("A1", "=1 + 1");
 
-            Assert.AreEqual((Formula)sheet.GetCellContents("A1"), new Formula("1 + 1"));
+            Assert.AreEqual(sheet.GetCellContents("A1"), "=1+1");
         }
 
         /// <summary>
@@ -282,11 +282,28 @@ namespace SpreadsheetTests
             sheet.SetContentsOfCell("B1", "=C1 + 5");
             try
             {
-                sheet.SetContentsOfCell("C1", "A1 + 5");
+                sheet.SetContentsOfCell("C1", "=A1 + 5");
             } 
             catch (CircularException)
             {
                 Assert.IsFalse(sheet.GetNamesOfAllNonemptyCells().Contains("C1"));
+            }
+        }
+
+        [TestMethod]
+        public void SetCircularStaysTheSameDouble()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("A1", "=B1 + 6");
+            sheet.SetContentsOfCell("B1", "=C1 + 5");
+            sheet.SetContentsOfCell("C1", "5");
+            try
+            {
+                sheet.SetContentsOfCell("C1", "=A1 + 5");
+            }
+            catch (CircularException)
+            {
+                Assert.AreEqual(sheet.GetCellContents("C1"), 5.0);
             }
         }
 
@@ -338,10 +355,15 @@ namespace SpreadsheetTests
             sheet.SetContentsOfCell("A1", "5");
 
             Assert.IsTrue(sheet.Changed);
+
+            sheet.Save("save.txt");
+
+            Assert.IsFalse(sheet.Changed);
+
         }
 
         [TestMethod]
-        public void ChangedFormula()
+        public void ChangedFormulaCirlce()
         {
             Spreadsheet sheet = new Spreadsheet();
 
@@ -392,7 +414,7 @@ namespace SpreadsheetTests
         public void SpreadSheetReadFromFile()
         {
             Spreadsheet sheet = new Spreadsheet();
-            sheet.SetContentsOfCell("A1", "5  + 6");
+            sheet.SetContentsOfCell("A1", "5 + 6");
             sheet.SetContentsOfCell("A2", "6");
             sheet.SetContentsOfCell("A3", "Hi");
 
@@ -400,7 +422,65 @@ namespace SpreadsheetTests
 
             Spreadsheet sheet2 = new Spreadsheet("saved.txt", s => true, s => s, "default");
 
-            Assert.AreEqual(sheet2.GetCellContents("A1"), "11");
+            Assert.AreEqual(sheet2.GetCellContents("A1"), "5 + 6");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void invalidFilePath()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.Save("totally/bad/directory.xml");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void InvalidFilePathGetVersion()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.GetSavedVersion("totally/bad/directory.xml");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(SpreadsheetReadWriteException))]
+        public void InvalidFilePathVersion()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.Save("save.txt");
+
+            sheet = new Spreadsheet("save.txt", s => true, s => s, "wrong");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void InvalidCellNameContent()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.GetCellContents("?");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void InvalidCellNameValue()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.GetCellValue("?");
+        }
+
+        [TestMethod]
+        public void Normalize()
+        {
+            Spreadsheet sheet = new Spreadsheet(s => true, s => s.ToUpper(), "1.0");
+
+            sheet.SetContentsOfCell("a1", "=a2 + 6");
+            sheet.SetContentsOfCell("A2", "=a3");
+            sheet.SetContentsOfCell("a3", "5");
+            sheet.SetContentsOfCell("A3", "6");
+
+
+            Assert.AreEqual(sheet.GetCellContents("A1").ToString(), "=A2+6");
+            Assert.AreEqual(sheet.GetCellContents("a2").ToString(), "=A3");
+            Assert.AreEqual(sheet.GetCellContents("A3"), 6.0);
         }
     }
 }

@@ -57,6 +57,10 @@ namespace SS
             cells = new Dictionary<string, Cell>();
             dependencyGraph = new DependencyGraph();
             changed = false;
+
+            if (!GetSavedVersion(filePath).Equals(version))
+                throw new SpreadsheetReadWriteException("Invalid Version");
+
             try
             {
                 using (XmlReader reader = XmlReader.Create(filePath))
@@ -74,9 +78,9 @@ namespace SS
                         }
                     }
                 }
-            } catch(CircularException)
+            } catch(Exception)
             {
-                throw new CircularException();
+                throw new SpreadsheetReadWriteException("Error Reading From Spreadsheet");
             }   
         }
 
@@ -93,13 +97,19 @@ namespace SS
         /// <inheritdoc/>
         public override object GetCellContents(string name)
         {
-            if(!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$"))
+            name = normalize(name);
+
+            if(!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$") || !isValid(name))
             {
                 throw new InvalidNameException();
             }
 
             if(cells.ContainsKey(name))
             {
+                if (cells[name].getContent() is Formula)
+                {
+                    return "="+cells[name].getContent().ToString();
+                }
                 return cells[name].getContent();
             }
 
@@ -237,6 +247,8 @@ namespace SS
 
         public override IList<string> SetContentsOfCell(string name, string content)
         {
+            name = normalize(name);
+
             if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$") || !isValid(name))
             {
                 throw new InvalidNameException();
@@ -253,13 +265,8 @@ namespace SS
             {
                 object formula = new Formula(content[1..], normalize, isValid);
 
-                if(formula is FormulaError)
-                {
-                    throw new FormulaFormatException("Invalid Formula");
-                }
-
                 //This will throw a CircularException if one is created
-               cellsToCalculate = SetCellContents(name, (Formula)formula);
+                cellsToCalculate = SetCellContents(name, (Formula)formula);
             }
             else
             {
@@ -308,7 +315,15 @@ namespace SS
         public override void Save(string filename)
         {
             changed = false;
-            WriteXml(filename);
+            try
+            {
+                WriteXml(filename);
+            }
+            catch (Exception)
+            {
+                throw new SpreadsheetReadWriteException("Error Reading From Spreadsheet");
+            }
+            
         }
 
         /// <summary>
