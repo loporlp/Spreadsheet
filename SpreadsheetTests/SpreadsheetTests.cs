@@ -102,8 +102,6 @@ namespace SpreadsheetTests
             Assert.AreEqual(sheet.GetCellContents("A1"), "Word");
         }
 
-        //TODO: SET CONTENTS OTHER OVERRIDES
-
         /// <summary>
         /// Gets the cell contents of cells
         /// that aren't in the spreadsheet
@@ -249,8 +247,8 @@ namespace SpreadsheetTests
             Assert.IsTrue(names.Contains("B1"));
             Assert.IsTrue(names.Contains("C1"));
             Assert.IsTrue(names.Count == 3);
-
         }
+
         /// <summary>
         /// Get NonEmptyCells with all cells being empty
         /// </summary>
@@ -264,6 +262,9 @@ namespace SpreadsheetTests
             Assert.AreEqual(0, names.Count);
         }
 
+        /// <summary>
+        /// Makes sure Circular Exception is thrown
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(CircularException))]
         public void SetCircular()
@@ -274,6 +275,10 @@ namespace SpreadsheetTests
             sheet.SetContentsOfCell("C1", "=A1 + 5"); 
         }
 
+        /// <summary>
+        /// Makes sure Spreadsheet stays the same after circular
+        /// exception is thrown
+        /// </summary>
         [TestMethod]
         public void SetCircularStaysTheSame()
         {
@@ -290,6 +295,10 @@ namespace SpreadsheetTests
             }
         }
 
+        /// <summary>
+        /// Makes sure Spreadsheet stays the same with a double
+        /// after circular exception is thrown
+        /// </summary>
         [TestMethod]
         public void SetCircularStaysTheSameDouble()
         {
@@ -307,6 +316,9 @@ namespace SpreadsheetTests
             }
         }
 
+        /// <summary>
+        /// Tests getting the value of a formula content cell
+        /// </summary>
         [TestMethod]
         public void CellValueCalculated()
         {
@@ -314,7 +326,11 @@ namespace SpreadsheetTests
             sheet.SetContentsOfCell("A1", "=5 + 5");
             Assert.AreEqual((double)sheet.GetCellValue("A1"), 10);
         }
-
+        
+        /// <summary>
+        /// Tests that a formula containing other cells as variables
+        /// is calculated correctly
+        /// </summary>
         [TestMethod]
         public void CellValueFromOtherCells()
         {
@@ -324,6 +340,11 @@ namespace SpreadsheetTests
             Assert.AreEqual((double)sheet.GetCellValue("A1"), 10);
         }
 
+        /// <summary>
+        /// Tests that the value of a cell containing a formula
+        /// with other cell name variables is calculated even if the other
+        /// cells were created before or after formula
+        /// </summary>
         [TestMethod]
         public void CellValueFromOtherCellsComplex()
         {
@@ -337,6 +358,9 @@ namespace SpreadsheetTests
             Assert.AreEqual((double)sheet.GetCellValue("A1"), 25);
         }
 
+        /// <summary>
+        /// Invalid formula should throw an exception
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
         public void InvalidFormula()
@@ -345,6 +369,9 @@ namespace SpreadsheetTests
             sheet.SetContentsOfCell("A1", "=B1 + ?");
         }
 
+        /// <summary>
+        /// makes sure changed is updating
+        /// </summary>
         [TestMethod]
         public void ChangedSimple() 
         {
@@ -362,6 +389,9 @@ namespace SpreadsheetTests
 
         }
 
+        /// <summary>
+        /// Make sure change is not updated after attempting a circular exception
+        /// </summary>
         [TestMethod]
         public void ChangedFormulaCirlce()
         {
@@ -379,13 +409,22 @@ namespace SpreadsheetTests
                 Assert.IsFalse(sheet.Changed);
             } 
         }
+
+        /// <summary>
+        /// makes sure cells can hold strings
+        /// </summary>
         [TestMethod]
         public void ChangedString()
         {
             Spreadsheet sheet = new Spreadsheet();
             sheet.SetContentsOfCell("A1", "Hello");
+
+            Assert.AreEqual(sheet.GetCellContents("A1"), "Hello");
         }
 
+        /// <summary>
+        /// Makes sure file is getting saved correctly
+        /// </summary>
         [TestMethod]
         public void SaveSimple()
         {
@@ -395,8 +434,13 @@ namespace SpreadsheetTests
             sheet.SetContentsOfCell("A3", "Hi");
 
             sheet.Save("SavedSheet.txt");
+
+            Assert.AreEqual(sheet.GetSavedVersion("SavedSheet.txt"), "default");
         }
 
+        /// <summary>
+        /// gets the correct version from a saved spreadsheet
+        /// </summary>
         [TestMethod]
         public void GetVersion()
         {
@@ -410,6 +454,9 @@ namespace SpreadsheetTests
             Assert.AreEqual("default", sheet.GetSavedVersion("SavedSheet.txt"));
         }
 
+        /// <summary>
+        /// Builds spreadsheet from a saved file
+        /// </summary>
         [TestMethod]
         public void SpreadSheetReadFromFile()
         {
@@ -425,6 +472,9 @@ namespace SpreadsheetTests
             Assert.AreEqual(sheet2.GetCellContents("A1"), "5 + 6");
         }
 
+        /// <summary>
+        /// Exception is thrown from invalid filepath
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(SpreadsheetReadWriteException))]
         public void invalidFilePath()
@@ -433,6 +483,10 @@ namespace SpreadsheetTests
             sheet.Save("totally/bad/directory.xml");
         }
 
+        /// <summary>
+        /// Exception is thrown from invalid file path while getting 
+        /// the version
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(SpreadsheetReadWriteException))]
         public void InvalidFilePathGetVersion()
@@ -441,6 +495,10 @@ namespace SpreadsheetTests
             sheet.GetSavedVersion("totally/bad/directory.xml");
         }
 
+        /// <summary>
+        /// If building a spreadsheet from a file and versions
+        /// do not match an exception is thrown
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(SpreadsheetReadWriteException))]
         public void InvalidFilePathVersion()
@@ -451,6 +509,10 @@ namespace SpreadsheetTests
             sheet = new Spreadsheet("save.txt", s => true, s => s, "wrong");
         }
 
+        /// <summary>
+        /// Exception is thrown when getCellContents is given invalid
+        /// cell name
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(InvalidNameException))]
         public void InvalidCellNameContent()
@@ -459,6 +521,10 @@ namespace SpreadsheetTests
             sheet.GetCellContents("?");
         }
 
+        /// <summary>
+        /// Exception is throw when getcellvalue is given invalid
+        /// cell name
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(InvalidNameException))]
         public void InvalidCellNameValue()
@@ -467,6 +533,9 @@ namespace SpreadsheetTests
             sheet.GetCellValue("?");
         }
 
+        /// <summary>
+        /// Makes sure that Cell names are being Normalized
+        /// </summary>
         [TestMethod]
         public void Normalize()
         {
