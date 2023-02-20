@@ -6,9 +6,21 @@ namespace SpreadsheetTests
 {
 
     /// <summary>
-    ///This is a test class for Spreadsheet.cs and is intended
-    ///to contain all Spreadsheet.cs Unit Tests
-    ///</summary>
+    /// Author: Mason Sansom
+    /// Partner: -none-
+    /// Date: 14-Feb-2023
+    /// Course:    CS 3500, University of Utah, School of Computing
+    /// Copyright: CS 3500 and Mason Sansom - This work may not 
+    ///            be copied for use in Academic Coursework.
+    ///
+    /// I, Mason Sansom, certify that I wrote this code from scratch and
+    /// did not copy it in part or whole from another source.  All 
+    /// references used in the completion of the assignments are cited 
+    /// in my README file.
+    ///
+    /// File Contents
+    ///This Class Does Extensive testing on Spreadsheet.cs
+    /// </summary>
     [TestClass]
     public class SpreadsheetTests
     {
@@ -314,6 +326,81 @@ namespace SpreadsheetTests
         {
             Spreadsheet sheet = new Spreadsheet();
             sheet.SetContentsOfCell("A1", "=B1 + ?");
+        }
+
+        [TestMethod]
+        public void ChangedSimple() 
+        {
+            Spreadsheet sheet = new Spreadsheet();
+
+            Assert.IsFalse(sheet.Changed);
+
+            sheet.SetContentsOfCell("A1", "5");
+
+            Assert.IsTrue(sheet.Changed);
+        }
+
+        [TestMethod]
+        public void ChangedFormula()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+
+            Assert.IsFalse(sheet.Changed);
+
+            sheet.SetContentsOfCell("A1", "A2 + 5");
+
+            try
+            {
+                sheet.SetContentsOfCell("A2", "A1 + 5");
+            } catch ( CircularException)
+            {
+                Assert.IsFalse(sheet.Changed);
+            } 
+        }
+        [TestMethod]
+        public void ChangedString()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("A1", "Hello");
+        }
+
+        [TestMethod]
+        public void SaveSimple()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("A1", "5  + 6");
+            sheet.SetContentsOfCell("A2", "6");
+            sheet.SetContentsOfCell("A3", "Hi");
+
+            sheet.Save("SavedSheet.txt");
+        }
+
+        [TestMethod]
+        public void GetVersion()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("A1", "5  + 6");
+            sheet.SetContentsOfCell("A2", "6");
+            sheet.SetContentsOfCell("A3", "Hi");
+
+            sheet.Save("SavedSheet.txt");
+
+            Assert.AreEqual("default", sheet.GetSavedVersion("SavedSheet.txt"));
+        }
+
+        [TestMethod]
+        public void SpreadSheetReadFromFile()
+        {
+            Spreadsheet sheet = new Spreadsheet();
+            sheet.SetContentsOfCell("A1", "5  + 6");
+            sheet.SetContentsOfCell("A2", "6");
+            sheet.SetContentsOfCell("A3", "Hi");
+
+            sheet.Save("saved.txt");
+
+            Spreadsheet sheet2 = new Spreadsheet("saved.txt", s => true, s => s, "default");
+
+            Assert.AreEqual(sheet2.GetCellContents("A1"), "11");
         }
     }
 }

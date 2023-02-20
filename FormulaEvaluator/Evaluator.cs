@@ -195,6 +195,7 @@ namespace FormulaEvaluator
             }
             return integers.Pop();
         }
+
         /// <summary>
         /// Takes in 2 numbers and one of the following
         /// operations [+, -, *, /]

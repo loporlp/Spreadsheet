@@ -21,4 +21,4 @@ within the spreadsheet
     2. Assignment Two:    Predicted Hours:         7       Acutal Hours:   5
     3. Assignment Three:  Predicted Hours:         6       Acutal Hours:   4
     4. Assignment Four:   Predicted Hours:         6       Acutal Hours:   5
-    5. Assignment Five:   Predicted Hours:         8       Acutal Hours:   3
+    5. Assignment Five:   Predicted Hours:         8       Acutal Hours:   8

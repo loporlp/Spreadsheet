@@ -5,13 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace SS
 {
     /// <summary>
     /// Author: Mason Sansom
     /// Partner: -none-
-    /// Date: 8-Feb-2023
+    /// Date: 14-Feb-2023
     /// Course:    CS 3500, University of Utah, School of Computing
     /// Copyright: CS 3500 and Mason Sansom - This work may not 
     ///            be copied for use in Academic Coursework.
@@ -32,8 +34,9 @@ namespace SS
         private Func<string, bool> isValid;
         private Func<string, string> normalize;
         private string version;
+        private bool changed;
 
-        public override bool Changed { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
+        public override bool Changed { get => changed; protected set => throw new NotImplementedException(); }
 
         public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
         {
@@ -42,12 +45,39 @@ namespace SS
             this.version = version;
             cells = new Dictionary<string, Cell>();
             dependencyGraph = new DependencyGraph();
+            changed = false;
         }
 
         public Spreadsheet(string filePath, Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
         {
-            //TODO implement filePath
-            throw new NotImplementedException();
+
+            this.isValid = isValid;
+            this.normalize = normalize;
+            this.version = version;
+            cells = new Dictionary<string, Cell>();
+            dependencyGraph = new DependencyGraph();
+            changed = false;
+            try
+            {
+                using (XmlReader reader = XmlReader.Create(filePath))
+                {
+                    while (reader.Read())
+                    {
+                        if (reader.IsStartElement() && reader.Name == "cell")
+                        {
+                            reader.ReadToFollowing("name");
+                            string name = reader.ReadElementContentAsString();
+                            reader.ReadToFollowing("contents");
+                            string content = reader.ReadElementContentAsString();
+
+                            this.SetCellContents(name, content);
+                        }
+                    }
+                }
+            } catch(CircularException)
+            {
+                throw new CircularException();
+            }   
         }
 
         public Spreadsheet() : base(s => true, s => s, "default")
@@ -57,6 +87,7 @@ namespace SS
             this.version = "default";
             cells = new Dictionary<string, Cell>();
             dependencyGraph = new DependencyGraph();
+            changed = false;
         }
 
         /// <inheritdoc/>
@@ -93,11 +124,6 @@ namespace SS
         /// <inheritdoc/>
         protected override IList<string> SetCellContents(string name, double number)
         {
-            if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$") || !isValid(name))
-            {
-                throw new InvalidNameException();
-            }
-
             if (cells.ContainsKey(name))
             {
                 dependencyGraph.ReplaceDependents(name, new List<string>());
@@ -121,11 +147,6 @@ namespace SS
         /// <inheritdoc/>
         protected override IList<string> SetCellContents(string name, string text)
         {
-            if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$") || !isValid(name))
-            {
-                throw new InvalidNameException();
-            }
-
             if (cells.ContainsKey(name))
             {
                 dependencyGraph.ReplaceDependents(name, new List<string>());
@@ -149,12 +170,6 @@ namespace SS
         /// <inheritdoc/>
         protected override IList<string> SetCellContents(string name, Formula formula)
         {
-
-            if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$") || !isValid(name))
-            {
-                throw new InvalidNameException();
-            }
-
             object oldItem = "";
 
             if (cells.ContainsKey(name))
@@ -260,20 +275,77 @@ namespace SS
                 }
             }
 
+            changed = true;
             return cellsToCalculate;
 
         }
 
+        /// <inheritdoc/>
         public override string GetSavedVersion(string filename)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (XmlReader reader = XmlReader.Create(filename))
+                {
+                    while (reader.Read())
+                    {
+                        if (reader.IsStartElement())
+                        {
+                            return reader.GetAttribute(0);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw new SpreadsheetReadWriteException("Error Reading From File");
+            }
+
+           throw new SpreadsheetReadWriteException("Unable to Read From File");
         }
 
+        /// <inheritdoc/>
         public override void Save(string filename)
         {
-            throw new NotImplementedException();
+            changed = false;
+            WriteXml(filename);
         }
 
+        /// <summary>
+        /// Write an XML representation of this Spreadsheet.
+        /// </summary>
+        /// <param Name="filename">The Name of the file where the XML representation will be saved.</param>
+        private void WriteXml(string filename)
+        {
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "  ";
+
+            using (XmlWriter writer = XmlWriter.Create(filename, settings))
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement("Spreadsheet");
+
+                // Version of Spreadheet
+                writer.WriteAttributeString("Version", version);
+
+
+                // write the states themselves
+                foreach (String s in cells.Keys)
+                {
+                    writer.WriteStartElement("cell");
+                    writer.WriteElementString("name", s);
+                    writer.WriteElementString("contents", cells[s].getContent() + "");
+                    writer.WriteEndElement();
+                }
+
+                writer.WriteEndElement(); 
+                writer.WriteEndDocument();
+            }
+        }
+
+
+        /// <inheritdoc/>
         public override object GetCellValue(string name)
         {
             if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$"))
@@ -289,6 +361,13 @@ namespace SS
             return "";
         }
 
+        /// <summary>
+        /// Helper method to be used with evaluate 
+        /// to look up the value of variables
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public double Lookup(string name)
         {
             try
@@ -316,7 +395,7 @@ namespace SS
                 value = content;
             }
             /// <summary>
-            /// Returns the Value of the Cell Obeject
+            /// Returns the Content of the Cell Obeject
             /// </summary>
             /// <returns></returns>
             public object getContent()
@@ -324,11 +403,19 @@ namespace SS
                 return content;
             }
 
+            /// <summary>
+            /// Sets the Value of the Cell Object
+            /// </summary>
+            /// <param name="newVal"></param>
             public void setValue(object newVal)
             {
                 value = newVal;
             }
 
+            /// <summary>
+            /// Returns the Value of the Cell object
+            /// </summary>
+            /// <returns></returns>
             public object getValue()
             {
                 return value;
