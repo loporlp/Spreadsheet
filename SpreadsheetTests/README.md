@@ -4,7 +4,7 @@ Partner:    None
 Course:     CS 3500, University of Utah, School of Computing
 GitHub ID:  loporlp
 Repo:       https://github.com/uofu-cs3500-spring23/spreadsheet-loporlp
-Date:       9-Feb-2023
+Date:       18-Feb-2023
 Project:    Formula Evaluator
 Copyright:  CS 3500 and Mason Sansom - This work may not be copied for use in Academic Coursework.
 ```
@@ -24,4 +24,4 @@ I did not run into any trouble and didn't have to consult anybody.
 
 # References:
 
-I did not reference anything all code is my own
+I Referenced some AS4 tests and refactored them for my own tests
