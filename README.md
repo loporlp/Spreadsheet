@@ -23,4 +23,4 @@ the XML format. It can also be generated from said file.
     3. Assignment Three: Predicted Hours:         6       Acutal Hours:   4
     4. Assignment Four:   Predicted Hours:         6       Acutal Hours:   5
     5. Assignment Five:    Predicted Hours:         8       Acutal Hours:   10
-    6. Assignment Six:      Predicted Hours:        10      Actual Hours:   
+    6. Assignment Six:      Predicted Hours:        10      Actual Hours:   1.5 +
