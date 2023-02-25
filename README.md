@@ -1,13 +1,13 @@
 ```
 Author:     Mason Sansom
-Partner:    None
+Partner:   Dhruv Rachakonda
 Date:       1-Jan-2023
 Course:     CS 3505, University of Utah, School of Computing
 GitHub ID:  loporlp
 Repo:       https://github.com/uofu-cs3500-spring23/spreadsheet-loporlp
 Date:       18-Feb-2023
 Solution:   Spreadsheet
-Copyright:  CS 3500 and Mason Sansom - This work may not be copied for use in Academic Coursework.
+Copyright:  CS 3500 and Mason Sansom / Dhruv Rachakonda - This work may not be copied for use in Academic Coursework.
 ```
 
 # Overview of the Spreadsheet functionality
@@ -23,3 +23,4 @@ the XML format. It can also be generated from said file.
     3. Assignment Three: Predicted Hours:         6       Acutal Hours:   4
     4. Assignment Four:   Predicted Hours:         6       Acutal Hours:   5
     5. Assignment Five:    Predicted Hours:         8       Acutal Hours:   10
+    6. Assignment Six:      Predicted Hours:        10      Actual Hours:   
