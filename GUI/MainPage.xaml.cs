@@ -3,6 +3,14 @@
     public partial class MainPage : ContentPage
     {
 
+        /// <summary>
+        ///    Definition of what information (method signature) must be sent
+        ///    by the Entry when it is modified.
+        /// </summary>
+        /// <param name="col"> col (char) in grid, e.g., A5 </param>
+        /// <param name="row"> row (int) in grid,  e.g., A5 </param>
+        public delegate void ActionOnCompleted(char col, int row);  
+
         public MainPage()
         {
             InitializeComponent();
@@ -52,6 +60,7 @@
                 );
             }
 
+            Dictionary<string, Entry> cells = new Dictionary<string, Entry>();
             int num = 1;
             letters = letters[1..];
             //Loops to add Entry Boxes
@@ -72,13 +81,15 @@
                         HorizontalOptions = LayoutOptions.Center,
                         Content =
                             new Entry
-                            {
+                            {                             
                                 Text = $"{c+""+num}",
                                 BackgroundColor = Color.FromRgb(0, 0, 0 ),
                                 HorizontalTextAlignment = TextAlignment.Center
                             }
-                    }
-                    );    
+                }
+                    );
+
+                    
                 }
                 num++;
             }
