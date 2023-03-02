@@ -73,7 +73,7 @@ namespace GUI;
             Unfocus();
 
             // Inform the outside world that we have changed
-            onChange(column, row);
+            onChange(column, row, this.Text);
         }
 
     }

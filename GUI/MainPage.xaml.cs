@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using SS;
+using System.Diagnostics;
 
 namespace GUI
 {
@@ -11,11 +12,16 @@ namespace GUI
         /// </summary>
         /// <param name="col"> col (char) in grid, e.g., A5 </param>
         /// <param name="row"> row (int) in grid,  e.g., A5 </param>
-        public delegate void ActionOnCompleted(char col, int row);  
+        public delegate void ActionOnCompleted(char col, int row, string text);
+
+        private static AbstractSpreadsheet spreadsheet;
+        private static Dictionary<string, MyEntry> cells;
 
         public MainPage()
         {
             InitializeComponent();
+
+            spreadsheet = new Spreadsheet();
 
             //Loop to add Top Labels
             char[] letters = " ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToArray();
@@ -62,7 +68,7 @@ namespace GUI
                 );
             }
 
-            Dictionary<string, MyEntry> cells = new Dictionary<string, MyEntry>();
+            cells = new Dictionary<string, MyEntry>();
             letters = letters[1..];
             //Loops to add Entry Boxes
             for (int i = 1; i < 10; i++)
@@ -101,15 +107,20 @@ namespace GUI
         /// </summary>
         /// <param name="col"> e.g., The 'A' in A5 </param>
         /// <param name="row"> e.g., The  5  in A5 </param>
-        void handleCellChanged(char col, int row)
+        void handleCellChanged(char col, int row, string text)
         {
-            Debug.WriteLine($"changed: {col}{row}");
+            string cellName = col + "" + row;
+            MyEntry entry = cells[cellName];
+
+            spreadsheet.SetContentsOfCell(cellName, text);
+
+            entry.Text = spreadsheet.GetCellValue(cellName).ToString();
         }
 
 
         public static void FileMenuNew(object sender, System.EventArgs e)
         {
-
+            spreadsheet = new Spreadsheet();
         }
 
         public static void FileMenuOpenAsync(object sender, System.EventArgs e)
