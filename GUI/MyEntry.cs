@@ -56,7 +56,8 @@ public class MyEntry : Entry
         // run what happens when Entry is Focused on
         focused = focusAction;
 
-        Text = $"{column + "" + row}";
+        //now set to empty text
+        Text = "";
         BackgroundColor = Color.FromRgb(0, 0, 0);
         HorizontalTextAlignment = TextAlignment.Center;
     }
@@ -79,7 +80,6 @@ public class MyEntry : Entry
     private void CellChangedValue(object sender, EventArgs e)
     {
         Unfocus();
-
         // Inform the outside world that we have changed
         onChange(column, row, this.Text);
     }
