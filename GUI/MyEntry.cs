@@ -56,6 +56,7 @@ public class MyEntry : Entry
         // run what happens when Entry is Focused on
         focused = focusAction;
 
+        //now set to empty text
         Text = "";
         BackgroundColor = Color.FromRgb(0, 0, 0);
         HorizontalTextAlignment = TextAlignment.Center;
