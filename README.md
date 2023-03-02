@@ -2,7 +2,7 @@
 Author:     Mason Sansom
 Partner:   Dhruv Rachakonda
 Date:       1-Jan-2023
-Course:     CS 3505, University of Utah, School of Computing
+Course:     CS 3500, University of Utah, School of Computing
 GitHub ID:  loporlp
 Repo:       https://github.com/uofu-cs3500-spring23/spreadsheet-loporlp
 Date:       18-Feb-2023
