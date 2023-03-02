@@ -151,15 +151,32 @@ namespace GUI
 
         }
 
-        public static void FileMenuOpenAsync(object sender, System.EventArgs e)
+        public static async void FileMenuOpenAsync(object sender, System.EventArgs e)
         {
+            FileResult? fileResult = await FilePicker.Default.PickAsync();
+            if(fileResult is not null)
+            {
+                foreach (MyEntry entry in cells.Values)
+                {
+                    entry.ClearAndUnfocus();
+                }
+
+                spreadsheet = new Spreadsheet(fileResult.FullPath, s=>true, s=>s.ToUpper(), "default");
+
+
+                foreach(string cell in spreadsheet.GetNamesOfAllNonemptyCells())
+                {
+                    MyEntry entry = cells[cell];
+                    entry.Text = spreadsheet.GetCellValue(cell).ToString();
+                }
+
+            }
 
         }
 
-        public static void HandleCellClicked(object sender, System.EventArgs e)
+        public static async void FileMenuSaveAsync(object sender, System.EventArgs e)
         {
-
+            
         }
-
     }
 }
