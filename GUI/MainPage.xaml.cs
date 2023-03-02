@@ -115,12 +115,19 @@ namespace GUI
             spreadsheet.SetContentsOfCell(cellName, text);
 
             entry.Text = spreadsheet.GetCellValue(cellName).ToString();
+
+            cells[col + "" + (row + 1)].Focus();
         }
 
 
         public static void FileMenuNew(object sender, System.EventArgs e)
         {
+            foreach(MyEntry entry in cells.Values)
+            {
+                entry.ClearAndUnfocus();
+            }
             spreadsheet = new Spreadsheet();
+
         }
 
         public static void FileMenuOpenAsync(object sender, System.EventArgs e)
