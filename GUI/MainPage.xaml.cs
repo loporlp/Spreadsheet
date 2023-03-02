@@ -38,7 +38,6 @@ namespace GUI
                 TopLabels.Add(
                 new Border
                 {
-                    Stroke = Color.FromRgb(0, 0, 0),
                     StrokeThickness = 1,
                     HeightRequest = 20,
                     WidthRequest = 75,
@@ -55,7 +54,7 @@ namespace GUI
             }
 
             //Loop to add Left Labels
-            for (int i = 1; i < 10; i++)
+            for (int i = 1; i < 11; i++)
             {
                 LeftLabels.Add(
                 new Border
@@ -79,7 +78,7 @@ namespace GUI
             cells = new Dictionary<string, MyEntry>();
             letters = letters[1..];
             //Loops to add Entry Boxes
-            for (int i = 1; i < 10; i++)
+            for (int i = 1; i < 11; i++)
             {
                 var horiz = new HorizontalStackLayout();
                 Grid.Add(horiz);
@@ -91,12 +90,12 @@ namespace GUI
                     horiz.Add(
                     new Border
                     {
-                        Stroke = Color.FromRgb(0, 0, 0),
+                        Stroke = Color.FromRgb(250, 250, 250),
                         StrokeThickness = 1,
                         HeightRequest = 30,
                         WidthRequest = 75,
                         HorizontalOptions = LayoutOptions.Center,
-                        Content = entry
+                        Content = entry                        
                     }
                     );
 
@@ -123,7 +122,7 @@ namespace GUI
             spreadsheet.SetContentsOfCell(cellName, text);
 
             entry.Text = spreadsheet.GetCellValue(cellName).ToString();
-
+            selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
             cells[col + "" + (row + 1)].Focus();
         }
 
@@ -135,7 +134,10 @@ namespace GUI
         /// <param name="row"></param>
         void handleCellFocused(char col, int row)
         {
-            Debug.WriteLine(col + "" + row + "IS FOCUSED");
+            string cellName = col + "" + row;
+            Debug.WriteLine(cellName + " IS FOCUSED");
+            MyEntry entry = cells[cellName];
+            selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
         }
 
 
@@ -153,5 +155,11 @@ namespace GUI
         {
 
         }
+
+        public static void HandleCellClicked(object sender, System.EventArgs e)
+        {
+
+        }
+
     }
 }
