@@ -1,4 +1,5 @@
-﻿using SS;
+﻿using SpreadsheetUtilities;
+using SS;
 using System.Diagnostics;
 
 namespace GUI
@@ -114,12 +115,26 @@ namespace GUI
         /// </summary>
         /// <param name="col"> e.g., The 'A' in A5 </param>
         /// <param name="row"> e.g., The  5  in A5 </param>
-        void handleCellChanged(char col, int row, string text)
+        async void handleCellChanged(char col, int row, string text)
         {
             string cellName = col + "" + row;
             MyEntry entry = cells[cellName];
 
-            spreadsheet.SetContentsOfCell(cellName, text);
+            try
+            {
+                spreadsheet.SetContentsOfCell(cellName, text);
+            }
+
+            catch (FormulaFormatException e) {
+                Debug.WriteLine(e.Message);
+                await DisplayAlert("FORMULA FORMAT ERROR", "Please re-enter formula and try again", "OK");
+            }
+
+            catch(CircularException e)
+            {
+                Debug.WriteLine(e.Message);
+                await DisplayAlert("CIRCULAR DEPENDENCY ERROR", "Please re-enter formula and try again, removing all circular dependencies", "OK");
+            }
 
             entry.Text = spreadsheet.GetCellValue(cellName).ToString();
             selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
@@ -140,14 +155,15 @@ namespace GUI
             selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
         }
 
-
-        public static void FileMenuNew(object sender, System.EventArgs e)
+        void FileMenuNew(object sender, System.EventArgs e)
         {
-            foreach(MyEntry entry in cells.Values)
+
+            foreach (MyEntry entry in cells.Values)
             {
                 entry.ClearAndUnfocus();
             }
             spreadsheet = new Spreadsheet();
+            selectedCell.Text = "";
 
         }
 
@@ -174,9 +190,24 @@ namespace GUI
 
         }
 
-        public static async void FileMenuSaveAsync(object sender, System.EventArgs e)
+        public async void FileMenuSaveAsync(object sender, System.EventArgs e)
         {
-            
+            string name = await DisplayPromptAsync("File Name", "Please enter name of spreadsheet. DO NOT INCLUDE EXTENSIONS OR ANY UNUSUAL CHARACTERS");
+            string path = await DisplayPromptAsync("Save File", "Please enter full path of folder you would like to save to");
+            string filePath = path + "\\" + name + ".sprd";
+
+
+            try
+            {
+                spreadsheet.Save(filePath);
+                await DisplayAlert("FILE SAVE SUCESSFUL", "Feel free to close this alert box and continue", "OK");
+
+            }
+            catch
+            {
+                await DisplayAlert("FILE SAVE FAIL", "Please re-enter file path and try again", "OK");
+            }
+
         }
     }
 }
