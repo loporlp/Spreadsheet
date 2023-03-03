@@ -7,6 +7,8 @@
         <MenuBarItem Text="File">
             <MenuFlyoutItem Text="New" Clicked="FileMenuNew" />
             <MenuFlyoutItem Text="Open" Clicked="FileMenuOpenAsync" />
+            <MenuFlyoutItem Text="Save" Clicked="FileMenuSaveAsync" />
+
         </MenuBarItem>
     </ContentPage.MenuBarItems>
 
@@ -23,7 +25,7 @@
         </Border>
 
         <!-- the column headers: A, B, C, ... -->
-        <HorizontalStackLayout x:Name="TopLabels" BackgroundColor="LightBlue"/>
+        <HorizontalStackLayout x:Name="TopLabels" BackgroundColor="LightBlue" />
 
         <!-- the Grid of Spreadsheet GUI Cells -->
         <ScrollView
