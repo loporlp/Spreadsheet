@@ -1,4 +1,5 @@
-﻿using SS;
+﻿using SpreadsheetUtilities;
+using SS;
 using System.Diagnostics;
 
 namespace GUI
@@ -113,13 +114,48 @@ namespace GUI
         /// </summary>
         /// <param name="col"> e.g., The 'A' in A5 </param>
         /// <param name="row"> e.g., The  5  in A5 </param>
-        void handleCellChanged(char col, int row, string text, bool refocus, bool textChanged)
+        async void handleCellChanged(char col, int row, string text, bool refocus, bool textChanged)
         {
             string cellName = col + "" + row;
 
             MyEntry entry = cells[cellName];
-
+           
             IList<string> cellsToUpdate = new List<string>();
+
+            //Check if we need to modify cell (used so we dont turn a formula into a number)
+            if (textChanged)
+            {
+                try
+                {
+                    cellsToUpdate = spreadsheet.setContentsOfCell(cellName, text);
+                }
+                catch()
+
+                entry.Text = spreadsheet.GetCellValue(cellName).ToString();
+                selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
+            }
+
+            //if needed move focus to next cell under if no such cell exists unfocus 
+            if (refocus)
+            {
+                try
+                {
+                    cells[col + "" + (row + 1)].Focus();
+                }
+                catch (Exception)
+                {
+                    cells[cellName].Unfocus();
+                }
+            }
+
+               
+            //Update all cells that need to be updated
+            foreach (string name in cellsToUpdate)
+            {
+                cells[name].Text = spreadsheet.GetCellValue(name).ToString();
+            }
+
+        }
 
             //Check if we need to modify cell (used so we dont turn a formula into a number)
             if (textChanged)
@@ -165,14 +201,15 @@ namespace GUI
             selectedCellContent.Text = spreadsheet.GetCellContents(cellName).ToString();
         }
 
-
-        public static void FileMenuNew(object sender, System.EventArgs e)
+        void FileMenuNew(object sender, System.EventArgs e)
         {
-            foreach(MyEntry entry in cells.Values)
+
+            foreach (MyEntry entry in cells.Values)
             {
                 entry.ClearAndUnfocus();
             }
             spreadsheet = new Spreadsheet();
+            selectedCell.Text = "";
 
         }
 
@@ -199,9 +236,24 @@ namespace GUI
 
         }
 
-        public static async void FileMenuSaveAsync(object sender, System.EventArgs e)
+        public async void FileMenuSaveAsync(object sender, System.EventArgs e)
         {
-            
+            string name = await DisplayPromptAsync("File Name", "Please enter name of spreadsheet. DO NOT INCLUDE EXTENSIONS OR ANY UNUSUAL CHARACTERS");
+            string path = await DisplayPromptAsync("Save File", "Please enter full path of folder you would like to save to");
+            string filePath = path + "\\" + name + ".sprd";
+
+
+            try
+            {
+                spreadsheet.Save(filePath);
+                await DisplayAlert("FILE SAVE SUCESSFUL", "Feel free to close this alert box and continue", "OK");
+
+            }
+            catch
+            {
+                await DisplayAlert("FILE SAVE FAIL", "Please re-enter file path and try again", "OK");
+            }
+
         }
     }
 }
