@@ -92,7 +92,7 @@ namespace GUI
                     horiz.Add(
                     new Border
                     {
-                        Stroke = Color.FromRgb(250, 250, 250),
+                        Stroke = Color.FromRgb(0, 0, 0),
                         StrokeThickness = 1,
                         HeightRequest = 30,
                         WidthRequest = 75,
@@ -100,6 +100,8 @@ namespace GUI
                         Content = entry
                     }
                     );
+                    entry.TextColor = Color.FromRgb(0, 0, 0);
+                    entry.BackgroundColor = Color.FromRgb(255, 255, 255);
                 }
             }
             cells["A1"].Focus();
@@ -270,6 +272,43 @@ namespace GUI
                 await DisplayAlert("FILE SAVE FAIL", "Please re-enter file path and try again", "OK");
             }
 
+        }
+
+        /// <summary>
+        ///     When button is clicked prompt for changing the color of 
+        ///     the spreadsheet is presented
+        /// </summary>
+        /// <param name="sender"> ignored </param>
+        /// <param name="e"> ignored </param>
+        public async void ColorChange(object sender, System.EventArgs e)
+        {
+            string color = await DisplayPromptAsync("Color", "Please enter an RGB value seperated by a single space e.g(255 255 255)");
+            int[] colorArray = color.Split(' ').Select(int.Parse).ToArray();
+            int[] compColor = GetComplimentaryColor(colorArray);
+
+            foreach (MyEntry entry in cells.Values)
+            {
+                entry.BackgroundColor = Color.FromRgb(color[0], color[1], color[2]);
+                
+                entry.TextColor = Color.FromRgb(compColor[0], compColor[1], compColor[2]);
+            }
+
+        }
+
+        /// <summary>
+        ///     Helper method that takes an array containg RGB
+        ///     values and edits it to be the RGB values of the 
+        ///     complimentary color
+        /// </summary>
+        /// <param name="color"> array of RGB values </param>
+        private int[] GetComplimentaryColor(int[] color)
+        {
+            int[] compColor = color;
+            compColor[0] = 255 - color[0];
+            compColor[1] = 255 - color[1];
+            compColor[2] = 255 - color[2];
+            Debug.WriteLine(compColor[0]);
+            return color;
         }
     }
 }

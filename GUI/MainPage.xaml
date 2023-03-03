@@ -8,8 +8,11 @@
             <MenuFlyoutItem Text="New" Clicked="FileMenuNew" />
             <MenuFlyoutItem Text="Open" Clicked="FileMenuOpenAsync" />
             <MenuFlyoutItem Text="Save" Clicked="FileMenuSaveAsync" />
+            <MenuFlyoutItem Text="Change Color" Clicked="ColorChange"/>
 
         </MenuBarItem>
+        
+        
     </ContentPage.MenuBarItems>
 
     <VerticalStackLayout x:Name="Entire">
