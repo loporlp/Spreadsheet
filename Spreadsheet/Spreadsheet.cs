@@ -74,7 +74,7 @@ namespace SS
                             reader.ReadToFollowing("contents");
                             string content = reader.ReadElementContentAsString();
 
-                            this.SetCellContents(name, content);
+                            this.SetContentsOfCell(name, content);
                         }
                     }
                 }
@@ -350,7 +350,14 @@ namespace SS
                 {
                     writer.WriteStartElement("cell");
                     writer.WriteElementString("name", s);
-                    writer.WriteElementString("contents", cells[s].getContent() + "");
+                    if (cells[s].getContent() is Formula)
+                    {
+                        writer.WriteElementString("contents", "=" + cells[s].getContent() + "");
+                    }
+                    else
+                    {
+                        writer.WriteElementString("contents", cells[s].getContent() + "");
+                    }
                     writer.WriteEndElement();
                 }
 
