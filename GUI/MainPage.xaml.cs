@@ -248,6 +248,7 @@ namespace GUI
                     {
                         MyEntry entry = cells[cell];
                         entry.Text = spreadsheet.GetCellValue(cell).ToString();
+                        
                     }
 
                 }
