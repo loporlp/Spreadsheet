@@ -218,16 +218,17 @@ namespace GUI
             selectedCellContent.Text = spreadsheet.GetCellContents(cellName).ToString();
         }
 
-        void FileMenuNew(object sender, System.EventArgs e)
+        async void FileMenuNew(object sender, System.EventArgs e)
         {
-
-            foreach (MyEntry entry in cells.Values)
+            if (!spreadsheet.Changed || await DisplayAlert("FILE UNSAVED", "Spreadsheet has not been saved, would you like to continue?", "Yes", "No"))
             {
-                entry.ClearAndUnfocus();
+                foreach (MyEntry entry in cells.Values)
+                {
+                    entry.ClearAndUnfocus();
+                }
+                spreadsheet = new Spreadsheet();
+                cells["A1"].Focus();
             }
-            spreadsheet = new Spreadsheet();
-            selectedCell.Text = "";
-
         }
 
         public async void FileMenuOpenAsync(object sender, System.EventArgs e)
