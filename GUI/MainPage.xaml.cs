@@ -144,7 +144,6 @@ namespace GUI
 
                 entry.Text = spreadsheet.GetCellValue(cellName).ToString();
                 selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
-
             }
 
             entry.Text = spreadsheet.GetCellValue(cellName).ToString();
@@ -163,9 +162,6 @@ namespace GUI
                 {
                     cells[cellName].Unfocus();
                 }
-
-
-
 
                 //Update all cells that need to be updated
                 foreach (string name in cellsToUpdate)
