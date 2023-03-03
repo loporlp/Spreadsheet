@@ -18,6 +18,7 @@
             HeightRequest="40">
             <HorizontalStackLayout>
                 <Label x:Name="selectedCell" Text="" WidthRequest="200"/>
+                <Label x:Name="selectedCellContent" Text="" WidthRequest="200"/>
             </HorizontalStackLayout>
         </Border>
 

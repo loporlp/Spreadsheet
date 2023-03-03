@@ -12,7 +12,7 @@ namespace GUI
         /// </summary>
         /// <param name="col"> col (char) in grid, e.g., A5 </param>
         /// <param name="row"> row (int) in grid,  e.g., A5 </param>
-        public delegate void ActionOnCompleted(char col, int row, string text);
+        public delegate void ActionOnCompleted(char col, int row, string text, bool refocus, bool textChanged);
 
         /// <summary>
         ///     Definition of what information must be sent by the Entry
@@ -97,11 +97,10 @@ namespace GUI
                         HorizontalOptions = LayoutOptions.Center,
                         Content = entry                        
                     }
-                    );
-
-                    
+                    );  
                 }
             }
+            cells["A1"].Focus();
         }
 
 
@@ -114,16 +113,42 @@ namespace GUI
         /// </summary>
         /// <param name="col"> e.g., The 'A' in A5 </param>
         /// <param name="row"> e.g., The  5  in A5 </param>
-        void handleCellChanged(char col, int row, string text)
+        void handleCellChanged(char col, int row, string text, bool refocus, bool textChanged)
         {
             string cellName = col + "" + row;
+
             MyEntry entry = cells[cellName];
 
-            spreadsheet.SetContentsOfCell(cellName, text);
+            IList<string> cellsToUpdate = new List<string>();
 
-            entry.Text = spreadsheet.GetCellValue(cellName).ToString();
-            selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
-            cells[col + "" + (row + 1)].Focus();
+            //Check if we need to modify cell (used so we dont turn a formula into a number)
+            if (textChanged)
+            {
+                cellsToUpdate = spreadsheet.SetContentsOfCell(cellName, text);
+
+                entry.Text = spreadsheet.GetCellValue(cellName).ToString();
+                selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
+            }
+
+            //if needed move focus to next cell under if no such cell exists unfocus 
+            if(refocus)
+            {
+                try
+                {
+                    cells[col + "" + (row + 1)].Focus();
+                }
+                catch (Exception)
+                {
+                    cells[cellName].Unfocus();
+                }
+            }
+ 
+            //Update all cells that need to be updated
+            foreach(string name in cellsToUpdate)
+            {
+                cells[name].Text = spreadsheet.GetCellValue(name).ToString();
+            }
+            
         }
 
         /// <summary>
@@ -135,9 +160,9 @@ namespace GUI
         void handleCellFocused(char col, int row)
         {
             string cellName = col + "" + row;
-            Debug.WriteLine(cellName + " IS FOCUSED");
-            MyEntry entry = cells[cellName];
-            selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
+
+            selectedCell.Text = cellName;
+            selectedCellContent.Text = spreadsheet.GetCellContents(cellName).ToString();
         }
 
 
