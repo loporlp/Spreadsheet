@@ -26,7 +26,9 @@ namespace GUI
         private static AbstractSpreadsheet spreadsheet;
         private static Dictionary<string, MyEntry> cells;
 
-
+        /// <summary>
+        /// Initialize the spreadsheet and display the GUI
+        /// </summary>
         public MainPage()
         {
             InitializeComponent();
@@ -56,7 +58,7 @@ namespace GUI
             }
 
             //Loop to add Left Labels
-            for (int i = 1; i < 11; i++)
+            for (int i = 1; i < 100; i++)
             {
                 LeftLabels.Add(
                 new Border
@@ -80,7 +82,7 @@ namespace GUI
             cells = new Dictionary<string, MyEntry>();
             letters = letters[1..];
             //Loops to add Entry Boxes
-            for (int i = 1; i < 11; i++)
+            for (int i = 1; i < 100; i++)
             {
                 var horiz = new HorizontalStackLayout();
                 Grid.Add(horiz);
@@ -104,6 +106,15 @@ namespace GUI
                     entry.BackgroundColor = Color.FromRgb(255, 255, 255);
                 }
             }
+        }
+
+        /// <summary>
+        ///     Focus on A1 when sheet is loaded
+        /// </summary>
+        /// <param name="sender"> ignored </param>
+        /// <param name="e"> ignored </param>
+        private void FocusOnLoad(object sender, EventArgs e)
+        {
             cells["A1"].Focus();
         }
 
@@ -216,6 +227,12 @@ namespace GUI
             selectedCellContent.Text = spreadsheet.GetCellContents(cellName).ToString();
         }
 
+        /// <summary>
+        ///     Creates a new file when button is clicked, 
+        ///     displays a warning if spreadsheet has not been saved
+        /// </summary>
+        /// <param name="sender"> ignored </param>
+        /// <param name="e"> ignored </param>
         async void FileMenuNew(object sender, System.EventArgs e)
         {
             if (!spreadsheet.Changed || await DisplayAlert("FILE UNSAVED", "Spreadsheet has not been saved, would you like to continue?", "Yes", "No"))
@@ -229,6 +246,12 @@ namespace GUI
             }
         }
 
+        /// <summary>
+        ///     Handle Opening a spreadsheet from a file when
+        ///     the button is clicked
+        /// </summary>
+        /// <param name="sender"> ignored </param>
+        /// <param name="e"> ignored </param>
         public async void FileMenuOpenAsync(object sender, System.EventArgs e)
         {
            if(!spreadsheet.Changed || await DisplayAlert("FILE UNSAVED", "Spreadsheet has not been saved, would you like to continue?", "Yes", "No"))
@@ -255,6 +278,12 @@ namespace GUI
             }
         }
 
+        /// <summary>
+        ///     Handle saving the spreadsheet when the save
+        ///     button is clicked
+        /// </summary>
+        /// <param name="sender"> ignored </param>
+        /// <param name="e"> ignored </param>
         public async void FileMenuSaveAsync(object sender, System.EventArgs e)
         {
             string name = await DisplayPromptAsync("File Name", "Please enter name of spreadsheet. DO NOT INCLUDE EXTENSIONS OR ANY UNUSUAL CHARACTERS");
@@ -294,6 +323,18 @@ namespace GUI
                 entry.TextColor = Color.FromRgb(compColor[0], compColor[1], compColor[2]);
             }
 
+        }
+
+        /// <summary>
+        ///     Method used to display the Help Menu when the button is clicked
+        /// </summary>
+        /// <param name="sender"> ignored </param>
+        /// <param name="e"> ignored </param>
+        private async void HelpMenu(object sender, System.EventArgs e)
+        {
+            await DisplayAlert("Help", "Any Formula must be started with an =\n " +
+                "to change the color of the spreadsheet use the ChangeColor menu option\n" +
+                "you will be warned of any errors that occur from user input ","OK");
         }
 
         /// <summary>
