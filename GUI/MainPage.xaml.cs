@@ -26,6 +26,7 @@ namespace GUI
         private static AbstractSpreadsheet spreadsheet;
         private static Dictionary<string, MyEntry> cells;
 
+
         public MainPage()
         {
             InitializeComponent();
@@ -96,9 +97,9 @@ namespace GUI
                         HeightRequest = 30,
                         WidthRequest = 75,
                         HorizontalOptions = LayoutOptions.Center,
-                        Content = entry                        
+                        Content = entry
                     }
-                    );  
+                    );
                 }
             }
             cells["A1"].Focus();
@@ -119,7 +120,7 @@ namespace GUI
             string cellName = col + "" + row;
 
             MyEntry entry = cells[cellName];
-           
+
             IList<string> cellsToUpdate = new List<string>();
 
             //Check if we need to modify cell (used so we dont turn a formula into a number)
@@ -143,12 +144,13 @@ namespace GUI
 
                 entry.Text = spreadsheet.GetCellValue(cellName).ToString();
                 selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
-                
+
             }
 
             entry.Text = spreadsheet.GetCellValue(cellName).ToString();
-                selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
-            
+            selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
+            textChanged = false;
+
 
             //if needed move focus to next cell under if no such cell exists unfocus 
             if (refocus)
@@ -161,29 +163,28 @@ namespace GUI
                 {
                     cells[cellName].Unfocus();
                 }
-            
 
 
-               
-            //Update all cells that need to be updated
-            foreach (string name in cellsToUpdate)
-            {
-                cells[name].Text = spreadsheet.GetCellValue(name).ToString();
+
+
+                //Update all cells that need to be updated
+                foreach (string name in cellsToUpdate)
+                {
+                    cells[name].Text = spreadsheet.GetCellValue(name).ToString();
+                }
+
             }
-
-        }
 
             //Check if we need to modify cell (used so we dont turn a formula into a number)
             if (textChanged)
             {
                 cellsToUpdate = spreadsheet.SetContentsOfCell(cellName, text);
-
                 entry.Text = spreadsheet.GetCellValue(cellName).ToString();
                 selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
             }
 
             //if needed move focus to next cell under if no such cell exists unfocus 
-            if(refocus)
+            if (refocus)
             {
                 try
                 {
@@ -194,13 +195,13 @@ namespace GUI
                     cells[cellName].Unfocus();
                 }
             }
- 
+
             //Update all cells that need to be updated
-            foreach(string name in cellsToUpdate)
+            foreach (string name in cellsToUpdate)
             {
                 cells[name].Text = spreadsheet.GetCellValue(name).ToString();
             }
-            
+
         }
 
         /// <summary>
@@ -229,27 +230,29 @@ namespace GUI
 
         }
 
-        public static async void FileMenuOpenAsync(object sender, System.EventArgs e)
+        public async void FileMenuOpenAsync(object sender, System.EventArgs e)
         {
-            FileResult? fileResult = await FilePicker.Default.PickAsync();
-            if(fileResult is not null)
+           if(!spreadsheet.Changed || await DisplayAlert("FILE UNSAVED", "Spreadsheet has not been saved, would you like to continue?", "Yes", "No"))
             {
-                foreach (MyEntry entry in cells.Values)
+                FileResult fileResult = await FilePicker.Default.PickAsync();
+                if (fileResult is not null)
                 {
-                    entry.ClearAndUnfocus();
+                    foreach (MyEntry entry in cells.Values)
+                    {
+                        entry.ClearAndUnfocus();
+                    }
+
+                    spreadsheet = new Spreadsheet(fileResult.FullPath, s => true, s => s.ToUpper(), "default");
+
+
+                    foreach (string cell in spreadsheet.GetNamesOfAllNonemptyCells())
+                    {
+                        MyEntry entry = cells[cell];
+                        entry.Text = spreadsheet.GetCellValue(cell).ToString();
+                    }
+
                 }
-
-                spreadsheet = new Spreadsheet(fileResult.FullPath, s=>true, s=>s.ToUpper(), "default");
-
-
-                foreach(string cell in spreadsheet.GetNamesOfAllNonemptyCells())
-                {
-                    MyEntry entry = cells[cell];
-                    entry.Text = spreadsheet.GetCellValue(cell).ToString();
-                }
-
             }
-
         }
 
         public async void FileMenuSaveAsync(object sender, System.EventArgs e)
