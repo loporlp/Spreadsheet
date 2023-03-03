@@ -127,13 +127,28 @@ namespace GUI
             {
                 try
                 {
-                    cellsToUpdate = spreadsheet.setContentsOfCell(cellName, text);
+                    cellsToUpdate = spreadsheet.SetContentsOfCell(cellName, text);
                 }
-                catch()
+                catch (FormulaFormatException e)
+                {
+                    Debug.WriteLine(e.Message);
+                    await DisplayAlert("FORMULA FORMAT ERROR", "Please re-enter formula and try again", "OK");
+                }
+
+                catch (CircularException e)
+                {
+                    Debug.WriteLine(e.Message);
+                    await DisplayAlert("CIRCULAR DEPENDENCY ERROR", "Please re-enter formula and try again, removing all circular dependencies", "OK");
+                }
 
                 entry.Text = spreadsheet.GetCellValue(cellName).ToString();
                 selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
+                
             }
+
+            entry.Text = spreadsheet.GetCellValue(cellName).ToString();
+                selectedCell.Text = spreadsheet.GetCellContents(cellName).ToString();
+            
 
             //if needed move focus to next cell under if no such cell exists unfocus 
             if (refocus)
@@ -146,7 +161,8 @@ namespace GUI
                 {
                     cells[cellName].Unfocus();
                 }
-            }
+            
+
 
                
             //Update all cells that need to be updated
